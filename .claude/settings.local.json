@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(flutter --version)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:pub.dev)",
+      "Bash(flutter pub *)",
+      "WebSearch",
+      "Bash(python -c \"import supabase, openpyxl; print\\('deps ok'\\)\")",
+      "Bash(py --version)",
+      "Bash(where python *)",
+      "Bash(ls \"C:\\\\Users\\\\ellis\\\\OneDrive\")",
+      "PowerShell(winget install --id Python.Python.3.12 -e --source winget --accept-package-agreements --accept-source-agreements)",
+      "PowerShell(Get-Process | Where-Object { $_.ProcessName -match \"EXCEL|OneDrive\" } | Select-Object Id, ProcessName, MainWindowTitle)"
+    ]
+  }
+}
