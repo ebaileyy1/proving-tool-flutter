@@ -463,6 +463,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final maxY = _statusCounts.values.isEmpty
         ? 1.0
         : _statusCounts.values.reduce((a, b) => a > b ? a : b).toDouble() + 1;
+    // Trial counts are always whole numbers, so the axis should only ever
+    // label whole numbers too — capped so it doesn't cram in a label per
+    // count once totals get large.
+    final yAxisInterval = maxY <= 10 ? 1.0 : (maxY / 10).ceilToDouble();
 
     return Scaffold(
       appBar: AppBar(
@@ -751,6 +755,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                                 sideTitles: SideTitles(
                                                   showTitles: true,
                                                   reservedSize: 28,
+                                                  // Without a fixed interval, fl_chart picks a "nice"
+                                                  // fractional step (e.g. 0.5) when the range is small, and
+                                                  // truncating those to int for the label repeats digits
+                                                  // (0, 0, 1, 1...).
+                                                  interval: yAxisInterval,
                                                   getTitlesWidget: (value, meta) => Text(
                                                     value.toInt().toString(),
                                                     style: const TextStyle(fontSize: 11),
