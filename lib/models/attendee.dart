@@ -23,6 +23,9 @@ class Attendee {
   bool get isEmpty =>
       firstName.text.isEmpty && lastName.text.isEmpty && company.text.isEmpty;
 
+  /// Storage format — tagged and unambiguous so [parseAttendeesText] can
+  /// reconstruct the three fields exactly, no matter what characters end
+  /// up in a name or company (e.g. a comma or parenthesis).
   String toText() {
     final parts = [
       if (firstName.text.isNotEmpty) 'First name: ${firstName.text}',
@@ -30,6 +33,19 @@ class Attendee {
       if (company.text.isNotEmpty) 'Company: ${company.text}',
     ];
     return parts.join(', ');
+  }
+
+  /// Human-readable format for display only, e.g. "Ellis Bailey (ABC)" —
+  /// never parsed back, so it's free to be as friendly as it likes.
+  String toDisplayText() {
+    final name = [
+      firstName.text,
+      lastName.text,
+    ].where((s) => s.isNotEmpty).join(' ');
+    final companyText = company.text;
+    if (name.isEmpty) return companyText;
+    if (companyText.isEmpty) return name;
+    return '$name ($companyText)';
   }
 }
 
@@ -69,4 +85,16 @@ List<Attendee> parseAttendeesText(String raw) {
       company: company,
     );
   }).toList();
+}
+
+/// Turns the stored `attendees` string (in whatever format it's actually
+/// in — old or new) into the friendly display form, e.g. "Ellis Bailey
+/// (ABC)" one per line. Used everywhere attendees are shown read-only
+/// (trial detail, PDF export) so the underlying storage format can stay
+/// simple and unambiguous without users ever seeing it.
+String formatAttendeesForDisplay(String raw) {
+  return parseAttendeesText(raw)
+      .map((a) => a.toDisplayText())
+      .where((s) => s.isNotEmpty)
+      .join('\n');
 }

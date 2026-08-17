@@ -49,14 +49,43 @@ class _SignupScreenState extends State<SignupScreen> {
         password: _passwordController.text.trim(),
       );
 
-      if (response.user != null) {
+      final user = response.user;
+      // Supabase deliberately doesn't always throw for an email that's
+      // already registered (so an attacker can't tell registered emails
+      // apart from new ones) — instead it can return a "successful"-looking
+      // response for the existing account, sometimes with an active
+      // session already attached. An existing account's response has no
+      // new identity, so that's the signal to catch here instead of
+      // silently signing the user into someone else's account.
+      final isExistingAccount = user != null && (user.identities?.isEmpty ?? true);
+
+      if (isExistingAccount) {
+        try {
+          await _supabase.auth.signOut();
+        } catch (_) {}
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('An account with this email already exists. Please log in instead.'),
+            ),
+          );
+        }
+        return;
+      }
+
+      if (user != null) {
         await _supabase.from('profiles').insert({
-          'id': response.user!.id,
+          'id': user.id,
           'username': _usernameController.text.trim(),
           'is_admin': false,
         });
       }
     } on AuthException catch (e) {
+      // Guard against the same issue when signUp throws instead of
+      // returning normally — make sure no session survives a failed signup.
+      try {
+        await _supabase.auth.signOut();
+      } catch (_) {}
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.message)),

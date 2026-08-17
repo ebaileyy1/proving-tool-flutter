@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:proving_tool/config.dart';
+import 'package:proving_tool/models/attendee.dart';
 import 'package:proving_tool/models/trial.dart';
 import 'package:proving_tool/screens/trials/add_trial_screen.dart';
 import 'package:proving_tool/screens/trials/edit_trial_screen.dart';
@@ -703,7 +704,7 @@ class _ViewTrialScreenState extends State<ViewTrialScreen> {
                               if (_trial['run_plan'] != null && _trial['run_plan'].toString().isNotEmpty)
                                 _detailRow('Run Plan', _trial['run_plan']?.toString()),
                               if (_trial['attendees'] != null && _trial['attendees'].toString().isNotEmpty)
-                                _detailRow('Attendees', _trial['attendees']?.toString()),
+                                _detailRow('Attendees', formatAttendeesForDisplay(_trial['attendees'].toString())),
                               if ((_trial['description_of_trial'] == null || _trial['description_of_trial'].toString().isEmpty) &&
                                   (_trial['expected_outcome'] == null || _trial['expected_outcome'].toString().isEmpty) &&
                                   (_trial['run_plan'] == null || _trial['run_plan'].toString().isEmpty) &&

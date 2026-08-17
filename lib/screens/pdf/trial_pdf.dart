@@ -1,6 +1,7 @@
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
+import 'package:proving_tool/models/attendee.dart';
 
 class TrialPdf {
   static Future<void> generate({
@@ -180,7 +181,7 @@ class TrialPdf {
           else
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: trial['attendees'].toString().split('\n').where((a) => a.isNotEmpty).map((attendee) =>
+              children: formatAttendeesForDisplay(trial['attendees'].toString()).split('\n').where((a) => a.isNotEmpty).map((attendee) =>
                 pw.Container(
                   margin: const pw.EdgeInsets.only(bottom: 6),
                   padding: const pw.EdgeInsets.symmetric(horizontal: 12, vertical: 8),
