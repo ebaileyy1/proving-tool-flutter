@@ -14,6 +14,7 @@ import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/file_picker_helper.dart';
 import 'package:proving_tool/utils/file_types.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/widgets/add_outcome_sheet.dart';
 import 'package:proving_tool/widgets/pending_sync_chip.dart';
 import 'package:proving_tool/widgets/section_header.dart';
 
@@ -53,6 +54,20 @@ class _ViewTrialScreenState extends State<ViewTrialScreen> {
   bool get _isPendingLocal => widget.item.localId != null;
 
   int? get _remoteId => widget.item.remoteId;
+
+  /// True once this trial's start date has arrived (today or earlier) and
+  /// it hasn't been marked Completed/Failed yet — a nudge to log the
+  /// outcome instead of leaving it sitting as Pending/In Progress.
+  bool get _needsOutcome {
+    final status = _trial['status_of_trial']?.toString();
+    if (status != 'Pending' && status != 'In Progress') return false;
+    final date = DateTime.tryParse(_trial['date_of_start']?.toString() ?? '');
+    if (date == null) return false;
+    final today = DateTime.now();
+    final startDate = DateTime(date.year, date.month, date.day);
+    final todayDate = DateTime(today.year, today.month, today.day);
+    return !startDate.isAfter(todayDate);
+  }
 
   @override
   void initState() {
@@ -602,6 +617,38 @@ class _ViewTrialScreenState extends State<ViewTrialScreen> {
                                   "This trial hasn't synced yet — observations, PDF export and downloads will be available once it's online.",
                                   style: TextStyle(fontSize: 12, color: AppColors.navy),
                                 ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      if (_needsOutcome) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppColors.warning.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.warning),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.event_available, size: 18, color: AppColors.warning),
+                              const SizedBox(width: 8),
+                              const Expanded(
+                                child: Text(
+                                  "This trial's date has arrived — add the outcome when you're ready.",
+                                  style: TextStyle(fontSize: 12, color: AppColors.navy),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () async {
+                                  final saved = await showAddOutcomeSheet(context, widget.item);
+                                  if (saved == true) _loadData();
+                                },
+                                child: const Text('Add Outcome'),
                               ),
                             ],
                           ),

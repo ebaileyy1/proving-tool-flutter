@@ -19,7 +19,9 @@ import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/services/trial_repository.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/widgets/add_outcome_sheet.dart';
 import 'package:proving_tool/widgets/pending_sync_chip.dart';
+import 'package:proving_tool/widgets/section_header.dart';
 import 'package:proving_tool/widgets/stat_card.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -257,6 +259,203 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return ['All', ...years];
   }
 
+  static bool _isNotYetResolved(Map<String, dynamic> trial) {
+    final status = trial['status_of_trial']?.toString();
+    return status == 'Pending' || status == 'In Progress';
+  }
+
+  static DateTime? _startDateOnly(Map<String, dynamic> trial) {
+    final date = DateTime.tryParse(trial['date_of_start']?.toString() ?? '');
+    if (date == null) return null;
+    return DateTime(date.year, date.month, date.day);
+  }
+
+  static int _compareByStartDate(TrialListItem a, TrialListItem b) {
+    return _startDateOnly(a.data)!.compareTo(_startDateOnly(b.data)!);
+  }
+
+  /// Trials due today or overdue: not yet marked Completed/Failed and
+  /// their start date has already arrived. These are the ones that need
+  /// an outcome logged.
+  List<TrialListItem> get _dueItems {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final items = _allItems.where((item) {
+      if (!_isNotYetResolved(item.data)) return false;
+      final date = _startDateOnly(item.data);
+      return date != null && !date.isAfter(todayDate);
+    }).toList();
+    items.sort(_compareByStartDate);
+    return items;
+  }
+
+  /// Trials starting in the next 7 days (not counting today).
+  List<TrialListItem> get _upcomingItems {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final windowEnd = todayDate.add(const Duration(days: 7));
+    final items = _allItems.where((item) {
+      if (!_isNotYetResolved(item.data)) return false;
+      final date = _startDateOnly(item.data);
+      return date != null && date.isAfter(todayDate) && !date.isAfter(windowEnd);
+    }).toList();
+    items.sort(_compareByStartDate);
+    return items;
+  }
+
+  Widget _upcomingSection() {
+    final due = _dueItems;
+    final upcoming = _upcomingItems;
+    if (due.isEmpty && upcoming.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        if (due.isNotEmpty) ...[
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SectionHeader('Today'),
+                  const SizedBox(height: 12),
+                  for (final item in due) _dueTrialTile(item),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+        if (upcoming.isNotEmpty) ...[
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SectionHeader('This Week'),
+                  const SizedBox(height: 12),
+                  for (final item in upcoming) _upcomingTrialTile(item),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+        ],
+      ],
+    );
+  }
+
+  Widget _tag(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color),
+      ),
+    );
+  }
+
+  Widget _dueTrialTile(TrialListItem item) {
+    final today = DateTime.now();
+    final todayDate = DateTime(today.year, today.month, today.day);
+    final date = _startDateOnly(item.data);
+    final isOverdue = date != null && date.isBefore(todayDate);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: AppColors.border),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        item.data['fullname']?.toString() ?? '',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontWeight: FontWeight.w600, color: AppColors.navy),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    _tag(isOverdue ? 'Overdue' : 'Today', isOverdue ? AppColors.error : AppColors.lightNavy),
+                  ],
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  '${item.data['type_of_trial'] ?? ''} · ${item.data['terminal_of_trial'] ?? ''}',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 12, color: AppColors.otherText),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          TextButton(
+            onPressed: () async {
+              final saved = await showAddOutcomeSheet(context, item);
+              if (saved == true) _repo.refresh();
+            },
+            child: const Text('Add Outcome'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _upcomingTrialTile(TrialListItem item) {
+    final date = _startDateOnly(item.data);
+    final dateLabel = date == null ? '' : '${date.day}/${date.month}';
+
+    return InkWell(
+      borderRadius: BorderRadius.circular(8),
+      onTap: () async {
+        final result = await Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => ViewTrialScreen(item: item)),
+        );
+        if (result == true) _repo.refresh();
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                item.data['fullname']?.toString() ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: AppColors.navy),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Text(dateLabel, style: const TextStyle(fontSize: 12, color: AppColors.otherText)),
+            const SizedBox(width: 4),
+            const Icon(Icons.chevron_right, size: 18, color: AppColors.otherText),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final filteredItems = _fullyFilteredItems;
@@ -382,6 +581,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+
+                  // Trials due today/overdue and starting this week
+                  _upcomingSection(),
 
                   // Filters
                   Card(
