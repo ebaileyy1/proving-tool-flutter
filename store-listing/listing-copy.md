@@ -1,15 +1,15 @@
-# Play Store listing copy — Proving Tool
+# Play Store listing copy — Prove It
 
 Fill in / adjust before submitting. Character limits are Google's hard limits.
 
 ## App name (max 30 characters)
-Proving Tool
+Prove It
 
 ## Short description (max 80 characters)
 Log, track, and report operational trials — online or offline.
 
 ## Full description (max 4000 characters)
-Proving Tool is Aviation Business Continuity Ltd's internal app for logging
+Prove It is Aviation Business Continuity Ltd's internal app for logging
 and tracking operational trials from planning through to outcome.
 
 Key features:

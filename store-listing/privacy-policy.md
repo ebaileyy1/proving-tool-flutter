@@ -1,8 +1,8 @@
-# Privacy Policy — Proving Tool
+# Privacy Policy — Prove It
 
 **Last updated:** [DATE]
 
-Proving Tool is an internal application used by Aviation Business Continuity Ltd
+Prove It is an internal application used by Aviation Business Continuity Ltd
 staff to log, track, and report on operational trials. It is not available to
 the general public and is only used by authorised employees and contractors.
 

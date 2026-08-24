@@ -474,7 +474,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           children: [
             Image.asset('assets/abclogo.jpg', height: 32),
             const SizedBox(width: 10),
-            const Text('Proving Tool'),
+            const Text('Prove It'),
           ],
         ),
         actions: [

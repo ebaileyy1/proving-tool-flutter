@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
       syncService: syncService,
       connectivity: connectivity,
       child: MaterialApp(
-        title: 'Proving Tool',
+        title: 'Prove It',
         debugShowCheckedModeBanner: false,
         theme: _buildTheme(),
         home: const AuthGate(),

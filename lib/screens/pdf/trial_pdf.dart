@@ -12,11 +12,11 @@ class TrialPdf {
   }) async {
     final pdf = pw.Document();
 
-    const navy = PdfColor.fromInt(0xFF2C3E50);
+    const navy = PdfColor.fromInt(0xFF153D5C);
     const lightGrey = PdfColor.fromInt(0xFFF4F6F9);
     const borderGrey = PdfColor.fromInt(0xFFDCE3EA);
     const textGrey = PdfColor.fromInt(0xFF7F8C8D);
-    const accentBlue = PdfColor.fromInt(0xFF4A6FA5);
+    const accentBlue = PdfColor.fromInt(0xFF2E86AB);
     const successGreen = PdfColor.fromInt(0xFF16A34A);
     const failRed = PdfColor.fromInt(0xFFDC2626);
 
@@ -56,7 +56,7 @@ class TrialPdf {
                 crossAxisAlignment: pw.CrossAxisAlignment.start,
                 children: [
                   pw.Text(
-                    'PROVING TOOL',
+                    'PROVE IT',
                     style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: navy),
                   ),
                   pw.Text(

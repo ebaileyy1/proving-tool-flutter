@@ -1,17 +1,39 @@
-# proving_tool
+# Prove It
 
-A new Flutter project.
+Aviation Business Continuity Ltd's internal app for logging, tracking, and
+reporting on operational trials — built with Flutter, currently backed by
+Supabase.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- Create, edit, and duplicate trials (type, terminal, status, dates, attendees)
+- Attach drawings and evidence — camera capture or existing files
+- Observations and replies on each trial
+- Dashboard with filters, charts, and a "Today / This Week" view of upcoming
+  trials with a quick outcome-entry prompt
+- PDF export per trial, CSV export of the filtered trial list
+- Works fully offline — trials created or edited with no connection sync
+  automatically once back online
+- Admin screen for managing user accounts
 
-A few resources to get you started if this is your first Flutter project:
+## Getting started
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+```bash
+flutter pub get
+flutter run -d windows   # or -d chrome, an Android device, etc.
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Offline support uses [drift](https://drift.simonbinder.eu/) for local
+storage, so the first run also needs code generation:
+
+```bash
+dart run build_runner build --delete-conflicting-outputs
+```
+
+## Project layout
+
+- `lib/screens/` — one folder per feature area (auth, trials, dashboard, admin, ...)
+- `lib/services/` — Supabase access, the offline outbox/sync engine, connectivity
+- `lib/widgets/` — shared UI (trial form, section headers, sync status banner, ...)
+- `lib/theme/app_colors.dart` — the app's single color palette
+- `store-listing/` — drafts for the Play Store listing and privacy policy

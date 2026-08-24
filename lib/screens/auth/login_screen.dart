@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    'Proving Tool',
+                    'Prove It',
                     style: GoogleFonts.montserrat(
                       color: AppColors.navy,
                       fontSize: 20,
