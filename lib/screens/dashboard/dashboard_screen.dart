@@ -6,20 +6,16 @@ import 'package:csv/csv.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:proving_tool/models/trial.dart';
 import 'package:proving_tool/screens/trials/add_trial_screen.dart';
 import 'package:proving_tool/screens/trials/view_trial_screen.dart';
-import 'package:proving_tool/screens/admin/admin_screen.dart';
-import 'package:proving_tool/screens/profile/profile_screen.dart';
-import 'package:proving_tool/screens/notifications/notifications_screen.dart';
-import 'package:proving_tool/screens/sync/pending_uploads_screen.dart';
 import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/services/trial_repository.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/log.dart';
 import 'package:proving_tool/widgets/add_outcome_sheet.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 import 'package:proving_tool/widgets/pending_sync_chip.dart';
 import 'package:proving_tool/widgets/section_header.dart';
 import 'package:proving_tool/widgets/stat_card.dart';
@@ -32,12 +28,12 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  final _supabase = Supabase.instance.client;
   late final TrialRepository _repo;
   bool _repoInitialized = false;
   List<TrialListItem> _allItems = [];
   bool _isLoading = true;
-  int _unreadCount = 0;
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
 
   String? _selectedYear;
   String? _selectedMonth;
@@ -78,12 +74,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
   };
 
   @override
-  void initState() {
-    super.initState();
-    _loadUnreadCount();
-  }
-
-  @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_repoInitialized) {
@@ -98,6 +88,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void dispose() {
     _repo.trials.removeListener(_onTrialsChanged);
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -109,19 +100,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     setState(() => _isLoading = true);
     await _repo.refresh();
     if (mounted) setState(() => _isLoading = false);
-  }
-
-  Future<void> _loadUnreadCount() async {
-    try {
-      final response = await _supabase
-          .from('notifications')
-          .select()
-          .eq('user_id', _supabase.auth.currentUser!.id)
-          .eq('is_read', false);
-      setState(() => _unreadCount = (response as List).length);
-    } catch (e) {
-      logError('Error loading unread count', e);
-    }
   }
 
   Future<void> _exportCsv() async {
@@ -458,7 +436,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final filteredItems = _fullyFilteredItems;
+    final filteredItems = _searchQuery.isEmpty
+        ? _fullyFilteredItems
+        : _fullyFilteredItems
+              .where(
+                (item) => (item.data['fullname']?.toString() ?? '')
+                    .toLowerCase()
+                    .contains(_searchQuery.toLowerCase()),
+              )
+              .toList();
     final statusKeys = _statusCounts.keys.toList();
     final maxY = _statusCounts.values.isEmpty
         ? 1.0
@@ -469,112 +455,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final yAxisInterval = maxY <= 10 ? 1.0 : (maxY / 10).ceilToDouble();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Image.asset('assets/logo.png', height: 32),
-            const SizedBox(width: 10),
-            const Text('Prove It'),
-          ],
-        ),
+      appBar: AppHeader(
+        title: 'Dashboard',
         actions: [
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                  );
-                  _loadUnreadCount();
-                },
-              ),
-              if (_unreadCount > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: Container(
-                    padding: const EdgeInsets.all(2),
-                    decoration: const BoxDecoration(
-                      color: AppColors.error,
-                      shape: BoxShape.circle,
-                    ),
-                    constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                    child: Text(
-                      _unreadCount > 9 ? '9+' : _unreadCount.toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          ValueListenableBuilder<SyncSummary>(
-            valueListenable: _repo.syncSummary,
-            builder: (context, summary, _) {
-              return Stack(
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.cloud_sync),
-                    tooltip: 'Pending uploads',
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const PendingUploadsScreen()),
-                      );
-                    },
-                  ),
-                  if (summary.totalQueued > 0)
-                    Positioned(
-                      right: 8,
-                      top: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(2),
-                        decoration: BoxDecoration(
-                          color: summary.hasErrors ? AppColors.error : AppColors.warning,
-                          shape: BoxShape.circle,
-                        ),
-                        constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
-                        child: Text(
-                          summary.totalQueued > 9 ? '9+' : summary.totalQueued.toString(),
-                          style: const TextStyle(color: Colors.white, fontSize: 10),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
-                ],
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const ProfileScreen()),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.admin_panel_settings),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => const AdminScreen()),
-              );
-            },
-          ),
-          IconButton(
+          HeaderIconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
             onPressed: _loadTrials,
           ),
-          IconButton(
+          HeaderIconButton(
             icon: const Icon(Icons.file_download),
             tooltip: 'Export filtered trials as CSV',
             onPressed: _exportCsv,
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await _supabase.auth.signOut();
-            },
           ),
         ],
       ),
@@ -992,11 +884,35 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   // Trials list
                   const Text('Trials', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search trials by name',
+                      prefixIcon: const Icon(Icons.search),
+                      suffixIcon: _searchQuery.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.clear),
+                              onPressed: () {
+                                _searchController.clear();
+                                setState(() => _searchQuery = '');
+                              },
+                            ),
+                    ),
+                    onChanged: (value) => setState(() => _searchQuery = value),
+                  ),
+                  const SizedBox(height: 12),
                   filteredItems.isEmpty
-                      ? const Card(
+                      ? Card(
                           child: Padding(
-                            padding: EdgeInsets.all(24),
-                            child: Center(child: Text('No trials match the selected filters')),
+                            padding: const EdgeInsets.all(24),
+                            child: Center(
+                              child: Text(
+                                _searchQuery.isEmpty
+                                    ? 'No trials match the selected filters'
+                                    : 'No trials match "$_searchQuery"',
+                              ),
+                            ),
                           ),
                         )
                       : ListView.builder(

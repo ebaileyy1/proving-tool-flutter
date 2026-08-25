@@ -4,6 +4,7 @@ import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/services/connectivity_service.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 import 'package:proving_tool/widgets/offline_state.dart';
 import 'package:proving_tool/widgets/stat_card.dart';
 
@@ -186,11 +187,12 @@ class _AdminScreenState extends State<AdminScreen> {
     final userCount = _users.where((u) => u['is_admin'] != true).length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Admin Panel'),
+      appBar: AppHeader(
+        title: 'Admin Panel',
         actions: [
-          IconButton(
+          HeaderIconButton(
             icon: const Icon(Icons.refresh),
+            tooltip: 'Refresh',
             onPressed: _checkAdminAndLoad,
           ),
         ],

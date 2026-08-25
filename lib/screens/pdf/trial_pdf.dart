@@ -52,18 +52,9 @@ class TrialPdf {
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
             children: [
-              pw.Column(
-                crossAxisAlignment: pw.CrossAxisAlignment.start,
-                children: [
-                  pw.Text(
-                    'PROVE IT',
-                    style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: navy),
-                  ),
-                  pw.Text(
-                    'Aviation Business Continuity Ltd',
-                    style: pw.TextStyle(fontSize: 10, color: textGrey),
-                  ),
-                ],
+              pw.Text(
+                'PROVE IT',
+                style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold, color: navy),
               ),
               pw.Text('Trial Report', style: pw.TextStyle(fontSize: 12, color: textGrey)),
             ],

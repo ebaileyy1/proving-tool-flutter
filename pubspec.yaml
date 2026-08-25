@@ -1,5 +1,5 @@
 name: proving_tool
-description: "Prove It — Aviation Business Continuity Ltd's operational trials app."
+description: "Prove It — an operational trials app."
 publish_to: 'none'
 
 version: 1.0.0+1

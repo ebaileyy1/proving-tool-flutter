@@ -7,6 +7,7 @@ import 'package:proving_tool/screens/dashboard/dashboard_screen.dart';
 import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/services/connectivity_service.dart';
 import 'package:proving_tool/services/local_db.dart';
+import 'package:proving_tool/services/notification_badge_service.dart';
 import 'package:proving_tool/services/sync_service.dart';
 import 'package:proving_tool/services/trial_repository.dart';
 import 'package:proving_tool/theme/app_colors.dart';
@@ -35,11 +36,13 @@ Future<void> main() async {
     connectivity: connectivity,
     trialRepository: trialRepository,
   )..start();
+  final notificationBadge = NotificationBadgeService(Supabase.instance.client);
 
   runApp(MyApp(
     trialRepository: trialRepository,
     syncService: syncService,
     connectivity: connectivity,
+    notificationBadge: notificationBadge,
   ));
 }
 
@@ -49,11 +52,13 @@ class MyApp extends StatelessWidget {
     required this.trialRepository,
     required this.syncService,
     required this.connectivity,
+    required this.notificationBadge,
   });
 
   final TrialRepository trialRepository;
   final SyncService syncService;
   final ConnectivityService connectivity;
+  final NotificationBadgeService notificationBadge;
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +66,7 @@ class MyApp extends StatelessWidget {
       trialRepository: trialRepository,
       syncService: syncService,
       connectivity: connectivity,
+      notificationBadge: notificationBadge,
       child: MaterialApp(
         title: 'Prove It',
         debugShowCheckedModeBanner: false,
@@ -265,6 +271,10 @@ class AuthGate extends StatelessWidget {
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.session != null) {
+          // Fire-and-forget: populates the header's notification badge as
+          // soon as there's a session, rather than waiting for whichever
+          // screen happens to load first to fetch it.
+          AppServices.of(context).notificationBadge.refresh();
           return const SyncStatusBanner(child: DashboardScreen());
         }
         return const LoginScreen();

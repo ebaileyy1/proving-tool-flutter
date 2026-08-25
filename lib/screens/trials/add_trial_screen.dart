@@ -7,6 +7,7 @@ import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/file_picker_helper.dart';
 import 'package:proving_tool/utils/file_types.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 import 'package:proving_tool/widgets/trial_form.dart';
 
 class AddTrialScreen extends StatefulWidget {
@@ -156,9 +157,7 @@ class _AddTrialScreenState extends State<AddTrialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Add Trial'),
-      ),
+      appBar: const AppHeader(title: 'Add Trial'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(

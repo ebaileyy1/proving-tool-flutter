@@ -7,6 +7,7 @@ import 'package:proving_tool/services/local_db.dart';
 import 'package:proving_tool/services/trial_repository.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/file_types.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 
 /// Lets a user see and manage everything still queued for sync: trials
 /// created/edited offline and files attached offline, with their status
@@ -21,10 +22,10 @@ class PendingUploadsScreen extends StatelessWidget {
     final db = repo.db;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pending Uploads'),
+      appBar: AppHeader(
+        title: 'Pending Uploads',
         actions: [
-          IconButton(
+          HeaderIconButton(
             icon: const Icon(Icons.sync),
             tooltip: 'Retry now',
             onPressed: () => services.syncService.syncNow(manual: true),

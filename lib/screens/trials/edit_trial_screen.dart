@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 import 'package:proving_tool/widgets/trial_form.dart';
 
 class EditTrialScreen extends StatefulWidget {
@@ -79,9 +80,7 @@ class _EditTrialScreenState extends State<EditTrialScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Trial'),
-      ),
+      appBar: const AppHeader(title: 'Edit Trial'),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Center(

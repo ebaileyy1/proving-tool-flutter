@@ -1,8 +1,7 @@
 # Prove It
 
-Aviation Business Continuity Ltd's internal app for logging, tracking, and
-reporting on operational trials — built with Flutter, currently backed by
-Supabase.
+An internal app for logging, tracking, and reporting on operational
+trials — built with Flutter, currently backed by Supabase.
 
 ## Features
 

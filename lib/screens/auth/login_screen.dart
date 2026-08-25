@@ -77,15 +77,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Aviation Business Continuity',
-                    style: GoogleFonts.montserrat(
-                      color: AppColors.otherText,
-                      fontSize: 13,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
                   const SizedBox(height: 32),
                   Text(
                     'Email',

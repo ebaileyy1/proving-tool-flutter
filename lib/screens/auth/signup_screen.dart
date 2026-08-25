@@ -138,12 +138,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 4),
-                  const Text(
-                    'Aviation Business Continuity',
-                    style: TextStyle(color: AppColors.otherText, fontSize: 13),
-                    textAlign: TextAlign.center,
-                  ),
                   const SizedBox(height: 32),
                   TextField(
                     controller: _usernameController,

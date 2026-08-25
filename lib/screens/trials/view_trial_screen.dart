@@ -16,6 +16,7 @@ import 'package:proving_tool/utils/file_picker_helper.dart';
 import 'package:proving_tool/utils/file_types.dart';
 import 'package:proving_tool/utils/log.dart';
 import 'package:proving_tool/widgets/add_outcome_sheet.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 import 'package:proving_tool/widgets/pending_sync_chip.dart';
 import 'package:proving_tool/widgets/section_header.dart';
 
@@ -519,32 +520,20 @@ class _ViewTrialScreenState extends State<ViewTrialScreen> {
     final isPostTrial = status == 'Completed' || status == 'Failed';
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            Flexible(
-              child: Text(
-                _trial['fullname']?.toString() ?? 'Trial',
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (_isPendingLocal) ...[
-              const SizedBox(width: 8),
-              const PendingSyncChip(),
-            ],
-          ],
-        ),
+      appBar: AppHeader(
+        title: _trial['fullname']?.toString() ?? 'Trial',
+        statusChip: _isPendingLocal ? const PendingSyncChip() : null,
         actions: [
           ValueListenableBuilder<bool>(
             valueListenable: _connectivity.isOnline,
             builder: (context, isOnline, _) {
               final enabled = isOnline && !_isPendingLocal && !_isExportingPdf;
-              return IconButton(
+              return HeaderIconButton(
                 icon: _isExportingPdf
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.picture_as_pdf),
                 tooltip: !isOnline
@@ -556,7 +545,7 @@ class _ViewTrialScreenState extends State<ViewTrialScreen> {
               );
             },
           ),
-          IconButton(
+          HeaderIconButton(
             icon: const Icon(Icons.copy_all),
             tooltip: 'Duplicate as a new trial',
             onPressed: () {
@@ -568,8 +557,9 @@ class _ViewTrialScreenState extends State<ViewTrialScreen> {
             },
           ),
           if (_isOwnerOrAdmin) ...[
-            IconButton(
+            HeaderIconButton(
               icon: const Icon(Icons.edit),
+              tooltip: 'Edit',
               onPressed: () async {
                 final result = await Navigator.of(context).push(
                   MaterialPageRoute(
@@ -582,8 +572,9 @@ class _ViewTrialScreenState extends State<ViewTrialScreen> {
                 if (result == true) _loadData();
               },
             ),
-            IconButton(
+            HeaderIconButton(
               icon: const Icon(Icons.delete),
+              tooltip: 'Delete',
               onPressed: _deleteTrial,
             ),
           ],

@@ -2,9 +2,9 @@
 
 **Last updated:** [DATE]
 
-Prove It is an internal application used by Aviation Business Continuity Ltd
-staff to log, track, and report on operational trials. It is not available to
-the general public and is only used by authorised employees and contractors.
+Prove It is an internal application used to log, track, and report on
+operational trials. It is not available to the general public and is only
+used by authorised staff and contractors.
 
 ## Information we collect
 

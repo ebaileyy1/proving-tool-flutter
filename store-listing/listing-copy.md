@@ -9,7 +9,7 @@ Prove It
 Log, track, and report operational trials — online or offline.
 
 ## Full description (max 4000 characters)
-Prove It is Aviation Business Continuity Ltd's internal app for logging
+Prove It is an internal app for logging
 and tracking operational trials from planning through to outcome.
 
 Key features:
@@ -25,8 +25,8 @@ Key features:
 - Works fully offline — create and edit trials with no signal, and they
   sync automatically once you're back online
 
-This app is for authorised Aviation Business Continuity Ltd staff and
-contractors only and requires an account.
+This app is for authorised staff and contractors only and requires an
+account.
 
 ## Category
 Business

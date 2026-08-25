@@ -4,6 +4,7 @@ import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/services/connectivity_service.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 import 'package:proving_tool/widgets/offline_state.dart';
 
 class NotificationsScreen extends StatefulWidget {
@@ -140,16 +141,17 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final unreadCount = _notifications.where((n) => n['is_read'] != true).length;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Notifications'),
+      appBar: AppHeader(
+        title: 'Notifications',
         actions: [
           if (unreadCount > 0)
             TextButton(
               onPressed: _markAllRead,
-              child: const Text('Mark all read', style: TextStyle(color: Colors.white)),
+              style: TextButton.styleFrom(foregroundColor: Colors.white),
+              child: const Text('Mark all read'),
             ),
           if (_notifications.isNotEmpty)
-            IconButton(
+            HeaderIconButton(
               icon: const Icon(Icons.delete_sweep),
               tooltip: 'Clear all',
               onPressed: _clearAll,

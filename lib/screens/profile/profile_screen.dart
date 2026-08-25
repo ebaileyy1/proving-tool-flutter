@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/widgets/app_header.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -150,9 +151,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isAdmin = _profile['is_admin'] == true;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Profile'),
-      ),
+      appBar: const AppHeader(title: 'My Profile'),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
