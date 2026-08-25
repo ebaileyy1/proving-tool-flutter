@@ -7,16 +7,17 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // Navy + teal to match the "Prove It" logo. These are a visual estimate
-  // from the logo image, not sampled hex values from a brand guideline —
-  // swap them for exact values if/when those are available.
-  static const navy = Color(0xFF153D5C);
-  static const midNavy = Color(0xFF1F5478);
-  static const lightNavy = Color(0xFF2E86AB);
-  static const accent = Color(0xFF17B8C4);
+  // Exact brand values from the "Prove It" / Line of Sight logo: navy
+  // #111C5B and accent #5090AD. midNavy/lightNavy are interpolated
+  // in-between steps (not separately specified) so the palette still has
+  // a smooth navy-to-accent range for secondary UI elements.
+  static const navy = Color(0xFF111C5B);
+  static const midNavy = Color(0xFF243F74);
+  static const lightNavy = Color(0xFF3A6790);
+  static const accent = Color(0xFF5090AD);
   static const background = Color(0xFFFFFFFF);
   static const subBackground = Color(0xFFF4F6F9);
-  static const mainText = Color(0xFF153D5C);
+  static const mainText = Color(0xFF111C5B);
   static const otherText = Color(0xFF7F8C8D);
   static const border = Color(0xFFDCE3EA);
   static const success = Color(0xFF16A34A);

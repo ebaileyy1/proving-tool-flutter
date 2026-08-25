@@ -33,8 +33,21 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.34.3
   build_runner: ^2.4.13
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
   assets:
-    - assets/abclogo.jpg
+    - assets/logo.png
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  windows:
+    generate: true
+  image_path: "assets/logo_icon.png"
+  min_sdk_android: 21
+  # The icon has transparent padding around the eye mark, and Android
+  # adaptive icons expect that safe-zone padding baked in already.
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/logo_icon.png"

@@ -472,7 +472,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            Image.asset('assets/abclogo.jpg', height: 32),
+            Image.asset('assets/logo.png', height: 32),
             const SizedBox(width: 10),
             const Text('Prove It'),
           ],

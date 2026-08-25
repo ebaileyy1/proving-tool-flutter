@@ -12,11 +12,11 @@ class TrialPdf {
   }) async {
     final pdf = pw.Document();
 
-    const navy = PdfColor.fromInt(0xFF153D5C);
+    const navy = PdfColor.fromInt(0xFF111C5B);
     const lightGrey = PdfColor.fromInt(0xFFF4F6F9);
     const borderGrey = PdfColor.fromInt(0xFFDCE3EA);
     const textGrey = PdfColor.fromInt(0xFF7F8C8D);
-    const accentBlue = PdfColor.fromInt(0xFF2E86AB);
+    const accentBlue = PdfColor.fromInt(0xFF5090AD);
     const successGreen = PdfColor.fromInt(0xFF16A34A);
     const failRed = PdfColor.fromInt(0xFFDC2626);
 
