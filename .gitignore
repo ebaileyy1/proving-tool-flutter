@@ -46,3 +46,6 @@ app.*.map.json
 
 # Distributable build output (zipped release builds)
 /dist/
+
+# Local Claude Code config (not part of the app)
+/.claude/
