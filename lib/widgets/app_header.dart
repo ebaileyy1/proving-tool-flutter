@@ -8,20 +8,10 @@ import 'package:proving_tool/screens/sync/pending_uploads_screen.dart';
 import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 
-/// The app's page header for every screen once a user is logged in: a
-/// slim global identity row (logo, notifications, sync status, account
-/// menu) that's pixel-identical everywhere, plus a taller navy "branded
-/// band" underneath carrying that screen's own title and actions. Pass
-/// this as a `Scaffold`'s `appBar` in place of a plain `AppBar` — each
-/// screen only has to describe its own title/actions, not re-solve
-/// branding and account access every time.
+/// Page header for logged-in screens: a global row (notifications, sync,
+/// account menu) above a navy title band. Use it as the Scaffold's `appBar`.
 class AppHeader extends StatelessWidget implements PreferredSizeWidget {
-  const AppHeader({
-    super.key,
-    required this.title,
-    this.statusChip,
-    this.actions = const [],
-  });
+  const AppHeader({super.key, required this.title, this.statusChip, this.actions = const []});
 
   final String title;
   final Widget? statusChip;
@@ -32,9 +22,8 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   static const _accentBarHeight = 3.0;
 
   @override
-  Size get preferredSize => const Size.fromHeight(
-    _globalRowHeight + _titleRowHeight + _accentBarHeight,
-  );
+  Size get preferredSize =>
+      const Size.fromHeight(_globalRowHeight + _titleRowHeight + _accentBarHeight);
 
   @override
   Widget build(BuildContext context) {
@@ -83,10 +72,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                                 maxLines: 1,
                               ),
                             ),
-                            if (statusChip != null) ...[
-                              const SizedBox(width: 10),
-                              statusChip!,
-                            ],
+                            if (statusChip != null) ...[const SizedBox(width: 10), statusChip!],
                           ],
                         ),
                       ),
@@ -109,18 +95,10 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-/// A page-specific action button for [AppHeader]'s title row — a white
-/// icon on a translucent circle, readable on the navy band. [icon] takes
-/// a widget rather than an [IconData] so callers can swap in a loading
-/// spinner (e.g. while a PDF export is running) the same way they would
-/// with a plain [IconButton].
+/// Action button for [AppHeader]'s title row. [icon] is a widget so callers
+/// can swap in a spinner.
 class HeaderIconButton extends StatelessWidget {
-  const HeaderIconButton({
-    super.key,
-    required this.icon,
-    required this.onPressed,
-    this.tooltip,
-  });
+  const HeaderIconButton({super.key, required this.icon, required this.onPressed, this.tooltip});
 
   final Widget icon;
   final VoidCallback? onPressed;
@@ -160,28 +138,20 @@ class _GlobalRow extends StatelessWidget {
     final supabase = Supabase.instance.client;
     final email = supabase.auth.currentUser?.email ?? '';
     final initial = email.isNotEmpty ? email[0].toUpperCase() : '?';
+    Future<void> open(Widget screen) =>
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) => screen));
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          ClipOval(
-            child: Container(
-              width: 20,
-              height: 20,
-              color: Colors.white,
-              padding: const EdgeInsets.all(3),
-              child: Image.asset('assets/logo_icon.png'),
-            ),
-          ),
-          const SizedBox(width: 8),
           const Text(
             'PROVE IT',
             style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 0.5,
-              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 2,
+              color: Colors.white,
             ),
           ),
           const Spacer(),
@@ -191,9 +161,7 @@ class _GlobalRow extends StatelessWidget {
               icon: Icons.notifications,
               badgeColor: unread > 0 ? AppColors.error : null,
               onPressed: () async {
-                await Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const NotificationsScreen()),
-                );
+                await open(const NotificationsScreen());
                 services.notificationBadge.refresh();
               },
             ),
@@ -206,11 +174,7 @@ class _GlobalRow extends StatelessWidget {
               badgeColor: summary.totalQueued > 0
                   ? (summary.hasErrors ? AppColors.error : AppColors.warning)
                   : null,
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const PendingUploadsScreen()),
-                );
-              },
+              onPressed: () => open(const PendingUploadsScreen()),
             ),
           ),
           const SizedBox(width: 8),
@@ -220,13 +184,9 @@ class _GlobalRow extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             onSelected: (action) async {
               if (action == _AccountAction.profile) {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const ProfileScreen()));
+                open(const ProfileScreen());
               } else if (action == _AccountAction.admin) {
-                Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const AdminScreen()));
+                open(const AdminScreen());
               } else if (action == _AccountAction.logout) {
                 await supabase.auth.signOut();
               }

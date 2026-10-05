@@ -4,11 +4,7 @@ import 'package:proving_tool/services/notification_badge_service.dart';
 import 'package:proving_tool/services/sync_service.dart';
 import 'package:proving_tool/services/trial_repository.dart';
 
-/// Gives every screen access to the app's singleton services
-/// ([TrialRepository], [SyncService], [ConnectivityService],
-/// [NotificationBadgeService]) without threading them through
-/// constructors or adding a state-management package. Installed once
-/// near the root in `main.dart`.
+/// Exposes the app's singleton services to every screen. Installed once in main.dart.
 class AppServices extends InheritedWidget {
   const AppServices({
     super.key,
@@ -25,8 +21,7 @@ class AppServices extends InheritedWidget {
   final NotificationBadgeService notificationBadge;
 
   static AppServices of(BuildContext context) {
-    final services =
-        context.dependOnInheritedWidgetOfExactType<AppServices>();
+    final services = context.dependOnInheritedWidgetOfExactType<AppServices>();
     assert(services != null, 'No AppServices found above this context');
     return services!;
   }

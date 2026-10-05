@@ -4,6 +4,9 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:flutter/widgets.dart';
+import 'package:proving_tool/models/trial.dart';
+import 'package:proving_tool/services/trial_activity_log.dart';
+import 'package:proving_tool/utils/file_io.dart';
 import 'package:proving_tool/utils/file_types.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -11,10 +14,8 @@ import 'connectivity_service.dart';
 import 'local_db.dart';
 import 'trial_repository.dart';
 
-/// Walks the local outbox and pushes queued trials/files to Supabase
-/// whenever connectivity is restored, the app resumes, or the user taps
-/// "Sync now". Safe to trigger repeatedly/concurrently — an in-flight pass
-/// absorbs later triggers instead of running twice.
+/// Pushes queued trials and files to Supabase when connectivity returns, the
+/// app resumes, or the user taps Sync now. Safe to call repeatedly.
 class SyncService with WidgetsBindingObserver {
   SyncService({
     required this.supabase,
@@ -61,9 +62,8 @@ class SyncService with WidgetsBindingObserver {
     }
   }
 
-  /// Runs one (or more, if new writes land mid-pass) sync pass. A manual
-  /// call re-probes connectivity first since the user is explicitly asking
-  /// "try now" rather than relying on the last background check.
+  /// Runs a sync pass; calls during a pass just queue one more rerun.
+  /// A manual call re-probes connectivity first.
   Future<void> syncNow({bool manual = false}) async {
     if (_isSyncing) {
       _rerunRequested = true;
@@ -92,21 +92,14 @@ class SyncService with WidgetsBindingObserver {
     await trialRepository.refresh();
   }
 
-  // ---------------------------------------------------------------------
-  // Trials
-  // ---------------------------------------------------------------------
-
   Future<void> _syncTrials() async {
     final rows =
         await (db.select(db.pendingTrials)
               ..where(
                 (t) =>
-                    t.syncStatus.equals(SyncStatus.pending) |
-                    t.syncStatus.equals(SyncStatus.error),
+                    t.syncStatus.equals(SyncStatus.pending) | t.syncStatus.equals(SyncStatus.error),
               )
-              // 'create' sorts before 'update' alphabetically, which
-              // conveniently matches the order a trial's id must exist in
-              // before any update or file-attach can target it.
+              // 'create' sorts before 'update', which is the order we need
               ..orderBy([
                 (t) => OrderingTerm(expression: t.operation),
                 (t) => OrderingTerm(expression: t.createdAt),
@@ -119,37 +112,32 @@ class SyncService with WidgetsBindingObserver {
   }
 
   Future<void> _syncOneTrial(PendingTrial row) async {
-    await (db.update(
-      db.pendingTrials,
-    )..where((t) => t.localId.equals(row.localId))).write(
+    await (db.update(db.pendingTrials)..where((t) => t.localId.equals(row.localId))).write(
       const PendingTrialsCompanion(syncStatus: Value(SyncStatus.syncing)),
     );
 
     try {
-      final fields = Map<String, dynamic>.from(
-        jsonDecode(row.payloadJson) as Map,
-      );
+      final fields = Map<String, dynamic>.from(jsonDecode(row.payloadJson) as Map);
+      // reserved key on queued updates, not a real trial field
+      final baseUpdatedAt = fields.remove(kBaseUpdatedAtKey) as String?;
       final remoteId = row.operation == 'create'
           ? await _createRemoteTrial(fields, row.localId)
-          : await _updateRemoteTrial(row.remoteId!, fields);
+          : await _updateRemoteTrial(row.remoteId!, fields, baseUpdatedAt);
+
+      unawaited(
+        row.operation == 'create'
+            ? TrialActivityLog.logCreated(supabase: supabase, topicId: remoteId, fields: fields)
+            : TrialActivityLog.logUpdated(supabase: supabase, topicId: remoteId, fields: fields),
+      );
 
       await db.transaction(() async {
-        await (db.update(
-          db.pendingFiles,
-        )..where((f) => f.trialLocalId.equals(row.localId))).write(
-          PendingFilesCompanion(
-            trialLocalId: const Value(null),
-            trialRemoteId: Value(remoteId),
-          ),
+        await (db.update(db.pendingFiles)..where((f) => f.trialLocalId.equals(row.localId))).write(
+          PendingFilesCompanion(trialLocalId: const Value(null), trialRemoteId: Value(remoteId)),
         );
-        await (db.delete(
-          db.pendingTrials,
-        )..where((t) => t.localId.equals(row.localId))).go();
+        await (db.delete(db.pendingTrials)..where((t) => t.localId.equals(row.localId))).go();
       });
     } catch (e) {
-      await (db.update(
-        db.pendingTrials,
-      )..where((t) => t.localId.equals(row.localId))).write(
+      await (db.update(db.pendingTrials)..where((t) => t.localId.equals(row.localId))).write(
         PendingTrialsCompanion(
           syncStatus: const Value(SyncStatus.error),
           errorMessage: Value(e.toString()),
@@ -158,14 +146,8 @@ class SyncService with WidgetsBindingObserver {
     }
   }
 
-  /// Uses `client_uuid` to detect a create that already landed on a prior
-  /// attempt (e.g. the app was killed after the insert succeeded but before
-  /// the local row could be marked synced), so retrying never duplicates
-  /// the trial.
-  Future<int> _createRemoteTrial(
-    Map<String, dynamic> fields,
-    String localId,
-  ) async {
+  // the client_uuid check makes a retried create idempotent
+  Future<int> _createRemoteTrial(Map<String, dynamic> fields, String localId) async {
     final existing = await supabase
         .from('topics')
         .select('id')
@@ -185,14 +167,23 @@ class SyncService with WidgetsBindingObserver {
   Future<int> _updateRemoteTrial(
     int remoteId,
     Map<String, dynamic> fields,
+    String? baseUpdatedAt,
   ) async {
+    if (baseUpdatedAt != null) {
+      final row = await supabase
+          .from('topics')
+          .select('updated_at')
+          .eq('id', remoteId)
+          .maybeSingle();
+      final currentUpdatedAt = row?['updated_at']?.toString();
+      if (currentUpdatedAt != null && currentUpdatedAt != baseUpdatedAt) {
+        // _syncOneTrial turns this into a sync error shown on Pending Uploads
+        throw TrialConflictException(currentUpdatedAt);
+      }
+    }
     await supabase.from('topics').update(fields).eq('id', remoteId);
     return remoteId;
   }
-
-  // ---------------------------------------------------------------------
-  // Files
-  // ---------------------------------------------------------------------
 
   Future<void> _syncFiles() async {
     final rows =
@@ -210,9 +201,7 @@ class SyncService with WidgetsBindingObserver {
   }
 
   Future<void> _syncOneFile(PendingFile row) async {
-    await (db.update(
-      db.pendingFiles,
-    )..where((f) => f.id.equals(row.id))).write(
+    await (db.update(db.pendingFiles)..where((f) => f.id.equals(row.id))).write(
       const PendingFilesCompanion(uploadStatus: Value(SyncStatus.syncing)),
     );
 
@@ -227,9 +216,7 @@ class SyncService with WidgetsBindingObserver {
             storagePath,
             bytes,
             fileOptions: FileOptions(
-              contentType:
-                  row.mimeType ??
-                  mimeTypeForExtension(extensionOf(row.originalName)),
+              contentType: row.mimeType ?? mimeTypeForExtension(extensionOf(row.originalName)),
               upsert: true,
             ),
           );
@@ -241,18 +228,11 @@ class SyncService with WidgetsBindingObserver {
         'file_category': row.category,
       });
 
-      await (db.delete(
-        db.pendingFiles,
-      )..where((f) => f.id.equals(row.id))).go();
+      await (db.delete(db.pendingFiles)..where((f) => f.id.equals(row.id))).go();
 
-      final onDisk = File(row.localFilePath);
-      if (await onDisk.exists()) {
-        await onDisk.delete();
-      }
+      await deleteIfExists(row.localFilePath);
     } catch (e) {
-      await (db.update(
-        db.pendingFiles,
-      )..where((f) => f.id.equals(row.id))).write(
+      await (db.update(db.pendingFiles)..where((f) => f.id.equals(row.id))).write(
         PendingFilesCompanion(
           uploadStatus: const Value(SyncStatus.error),
           errorMessage: Value(e.toString()),

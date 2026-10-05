@@ -1,9 +1,6 @@
 import 'package:flutter/widgets.dart';
 
-/// One attendee entry in a trial's pre-trial details. Shared by the Add
-/// and Edit trial forms so both render the same structured
-/// first/last/company fields instead of one drifting into a flat
-/// free-text box.
+/// One attendee entry in a trial's pre-trial details.
 class Attendee {
   Attendee({String firstName = '', String lastName = '', String company = ''})
     : firstName = TextEditingController(text: firstName),
@@ -20,12 +17,9 @@ class Attendee {
     company.dispose();
   }
 
-  bool get isEmpty =>
-      firstName.text.isEmpty && lastName.text.isEmpty && company.text.isEmpty;
+  bool get isEmpty => firstName.text.isEmpty && lastName.text.isEmpty && company.text.isEmpty;
 
-  /// Storage format — tagged and unambiguous so [parseAttendeesText] can
-  /// reconstruct the three fields exactly, no matter what characters end
-  /// up in a name or company (e.g. a comma or parenthesis).
+  // Tagged format so parseAttendeesText can rebuild the fields whatever's in the names.
   String toText() {
     final parts = [
       if (firstName.text.isNotEmpty) 'First name: ${firstName.text}',
@@ -35,13 +29,9 @@ class Attendee {
     return parts.join(', ');
   }
 
-  /// Human-readable format for display only, e.g. "Ellis Bailey (ABC)" —
-  /// never parsed back, so it's free to be as friendly as it likes.
+  // Display only, never parsed back.
   String toDisplayText() {
-    final name = [
-      firstName.text,
-      lastName.text,
-    ].where((s) => s.isNotEmpty).join(' ');
+    final name = [firstName.text, lastName.text].where((s) => s.isNotEmpty).join(' ');
     final companyText = company.text;
     if (name.isEmpty) return companyText;
     if (companyText.isEmpty) return name;
@@ -49,12 +39,8 @@ class Attendee {
   }
 }
 
-/// Turns the newline-joined string `Attendee.toText()` produces (and that
-/// the `attendees` column stores) back into structured entries. A line
-/// that doesn't match the expected "First name: X, Last name: Y, Company:
-/// Z" shape is preserved verbatim in the company field rather than
-/// dropped, so editing a trial created before this parser existed never
-/// loses data.
+/// Parses the stored `attendees` string back into entries. Lines in an older
+/// free-text format are kept whole in the company field so nothing is lost.
 List<Attendee> parseAttendeesText(String raw) {
   final lines = raw.split('\n').where((l) => l.trim().isNotEmpty).toList();
   if (lines.isEmpty) return [Attendee()];
@@ -79,22 +65,13 @@ List<Attendee> parseAttendeesText(String raw) {
     if (!matched) {
       company = line.trim();
     }
-    return Attendee(
-      firstName: firstName,
-      lastName: lastName,
-      company: company,
-    );
+    return Attendee(firstName: firstName, lastName: lastName, company: company);
   }).toList();
 }
 
-/// Turns the stored `attendees` string (in whatever format it's actually
-/// in — old or new) into the friendly display form, e.g. "Ellis Bailey
-/// (ABC)" one per line. Used everywhere attendees are shown read-only
-/// (trial detail, PDF export) so the underlying storage format can stay
-/// simple and unambiguous without users ever seeing it.
+/// Stored attendees string to display text, one per line, e.g. "Ellis Bailey (ABC)".
 String formatAttendeesForDisplay(String raw) {
-  return parseAttendeesText(raw)
-      .map((a) => a.toDisplayText())
-      .where((s) => s.isNotEmpty)
-      .join('\n');
+  return parseAttendeesText(
+    raw,
+  ).map((a) => a.toDisplayText()).where((s) => s.isNotEmpty).join('\n');
 }

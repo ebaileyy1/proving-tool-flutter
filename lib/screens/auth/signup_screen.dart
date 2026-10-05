@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:proving_tool/theme/app_colors.dart';
+import 'package:proving_tool/screens/auth/auth_layout.dart';
 import 'package:proving_tool/utils/log.dart';
+import 'package:proving_tool/utils/ui_helpers.dart';
+import 'package:proving_tool/widgets/loading_button.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -22,23 +24,17 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_usernameController.text.trim().isEmpty ||
         _emailController.text.trim().isEmpty ||
         _passwordController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields')),
-      );
+      showMessage(context, 'Please fill in all fields');
       return;
     }
 
     if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
-      );
+      showMessage(context, 'Passwords do not match');
       return;
     }
 
     if (_passwordController.text.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 6 characters')),
-      );
+      showMessage(context, 'Password must be at least 6 characters');
       return;
     }
 
@@ -50,13 +46,9 @@ class _SignupScreenState extends State<SignupScreen> {
       );
 
       final user = response.user;
-      // Supabase deliberately doesn't always throw for an email that's
-      // already registered (so an attacker can't tell registered emails
-      // apart from new ones) — instead it can return a "successful"-looking
-      // response for the existing account, sometimes with an active
-      // session already attached. An existing account's response has no
-      // new identity, so that's the signal to catch here instead of
-      // silently signing the user into someone else's account.
+      // For an already-registered email Supabase can return a normal-looking
+      // response (even with a session) instead of throwing, to avoid leaking
+      // which emails exist. No new identity in the response is the tell.
       final isExistingAccount = user != null && (user.identities?.isEmpty ?? true);
 
       if (isExistingAccount) {
@@ -64,11 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
           await _supabase.auth.signOut();
         } catch (_) {}
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('An account with this email already exists. Please log in instead.'),
-            ),
-          );
+          showMessage(context, 'An account with this email already exists. Please log in instead.');
         }
         return;
       }
@@ -81,23 +69,14 @@ class _SignupScreenState extends State<SignupScreen> {
         });
       }
     } on AuthException catch (e) {
-      // Guard against the same issue when signUp throws instead of
-      // returning normally — make sure no session survives a failed signup.
+      // Make sure no session survives a failed signup.
       try {
         await _supabase.auth.signOut();
       } catch (_) {}
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
-      }
+      if (mounted) showMessage(context, e.message);
     } catch (e) {
       logError('Signup error', e);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating account: $e')),
-        );
-      }
+      if (mounted) showMessage(context, 'Error creating account: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -105,99 +84,56 @@ class _SignupScreenState extends State<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.navy,
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 420),
-            child: Container(
-              padding: const EdgeInsets.all(40),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.3),
-                    blurRadius: 60,
-                    offset: const Offset(0, 20),
-                  ),
-                ],
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
-                    child: Image.asset('assets/logo.png', height: 56),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Create Account',
-                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 32),
-                  TextField(
-                    controller: _usernameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Username',
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _passwordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Password',
-                    ),
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _confirmPasswordController,
-                    decoration: const InputDecoration(
-                      labelText: 'Confirm Password',
-                    ),
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: _isLoading ? null : _signup,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                    ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 18,
-                            width: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                        : const Text('Create Account'),
-                  ),
-                  const SizedBox(height: 12),
-                  Center(
-                    child: TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Already have an account? Login'),
-                    ),
-                  ),
-                ],
-              ),
+    return AuthScaffold(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(child: Image.asset('assets/logo.png', height: 56)),
+          const SizedBox(height: 12),
+          const Text(
+            'Create Account',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+          TextField(
+            controller: _usernameController,
+            decoration: const InputDecoration(labelText: 'Username'),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _emailController,
+            decoration: const InputDecoration(labelText: 'Email'),
+            keyboardType: TextInputType.emailAddress,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _passwordController,
+            decoration: const InputDecoration(labelText: 'Password'),
+            obscureText: true,
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _confirmPasswordController,
+            decoration: const InputDecoration(labelText: 'Confirm Password'),
+            obscureText: true,
+          ),
+          const SizedBox(height: 24),
+          LoadingButton(
+            isLoading: _isLoading,
+            onPressed: _signup,
+            label: 'Create Account',
+            padding: const EdgeInsets.symmetric(vertical: 12),
+          ),
+          const SizedBox(height: 12),
+          Center(
+            child: TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Already have an account? Login'),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

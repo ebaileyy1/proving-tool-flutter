@@ -1,6 +1,4 @@
-/// Shared file-extension helpers used wherever drawing/evidence attachments
-/// are picked, queued offline, or uploaded (add/edit/view trial screens and
-/// the sync engine all need the same mapping).
+/// Lowercased extension without the dot, or '' if there isn't one.
 String extensionOf(String fileName) {
   return fileName.contains('.') ? fileName.split('.').last.toLowerCase() : '';
 }

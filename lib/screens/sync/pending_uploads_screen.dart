@@ -8,10 +8,10 @@ import 'package:proving_tool/services/trial_repository.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 import 'package:proving_tool/utils/file_types.dart';
 import 'package:proving_tool/widgets/app_header.dart';
+import 'package:proving_tool/widgets/empty_state.dart';
+import 'package:proving_tool/widgets/status_badge.dart';
 
-/// Lets a user see and manage everything still queued for sync: trials
-/// created/edited offline and files attached offline, with their status
-/// and a way to retry or discard a stuck item.
+/// Everything still queued for sync, with retry/discard for stuck items.
 class PendingUploadsScreen extends StatelessWidget {
   const PendingUploadsScreen({super.key});
 
@@ -58,7 +58,11 @@ class PendingUploadsScreen extends StatelessWidget {
                     final files = filesSnapshot.data ?? const <PendingFile>[];
 
                     if (trials.isEmpty && files.isEmpty) {
-                      return const _EmptyState();
+                      return const EmptyState(
+                        icon: Icons.cloud_done,
+                        title: 'Nothing queued',
+                        message: 'Everything you\'ve created or edited has synced.',
+                      );
                     }
 
                     return ListView(
@@ -67,15 +71,13 @@ class PendingUploadsScreen extends StatelessWidget {
                         if (trials.isNotEmpty) ...[
                           const _SectionLabel('Trials'),
                           const SizedBox(height: 8),
-                          for (final trial in trials)
-                            _PendingTrialTile(trial: trial, repo: repo),
+                          for (final trial in trials) _PendingTrialTile(trial: trial, repo: repo),
                           const SizedBox(height: 20),
                         ],
                         if (files.isNotEmpty) ...[
                           const _SectionLabel('Files'),
                           const SizedBox(height: 8),
-                          for (final file in files)
-                            _PendingFileTile(file: file, repo: repo),
+                          for (final file in files) _PendingFileTile(file: file, repo: repo),
                         ],
                       ],
                     );
@@ -127,17 +129,7 @@ class _StatusBadge extends StatelessWidget {
       SyncStatus.error => (AppColors.error, 'Failed'),
       _ => (AppColors.warning, 'Queued'),
     };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color),
-      ),
-    );
+    return ColorPill(label: label, color: color, dense: true);
   }
 }
 
@@ -161,8 +153,8 @@ class _PendingTrialTile extends StatelessWidget {
           trial.hasSyncError && trial.errorMessage != null
               ? trial.errorMessage!
               : isCreate
-                  ? 'New trial — not yet on the server'
-                  : 'Edit queued for an existing trial',
+              ? 'New trial - not yet on the server'
+              : 'Edit queued for an existing trial',
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
@@ -215,32 +207,6 @@ class _PendingFileTile extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.cloud_done, size: 64, color: AppColors.otherText),
-          SizedBox(height: 16),
-          Text(
-            'Nothing queued',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.navy),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Everything you\'ve created or edited has synced.',
-            style: TextStyle(color: AppColors.otherText),
-          ),
-        ],
       ),
     );
   }

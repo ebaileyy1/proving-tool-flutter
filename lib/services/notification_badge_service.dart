@@ -2,10 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:proving_tool/utils/log.dart';
 
-/// Tracks the current user's unread notification count so the header can
-/// show a badge on every screen, not just the one screen that happens to
-/// have loaded it. Previously this was local state inside the Dashboard
-/// screen alone.
+/// Unread notification count, shared so the header badge works on every screen.
 class NotificationBadgeService {
   NotificationBadgeService(this._supabase);
 

@@ -16,10 +16,7 @@ import 'package:proving_tool/widgets/sync_status_banner.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Supabase.initialize(
-    url: SupabaseConfig.url,
-    anonKey: SupabaseConfig.anonKey,
-  );
+  await Supabase.initialize(url: SupabaseConfig.url, anonKey: SupabaseConfig.anonKey);
 
   final localDb = LocalDb();
   await localDb.resetInterruptedSyncStatus();
@@ -38,12 +35,14 @@ Future<void> main() async {
   )..start();
   final notificationBadge = NotificationBadgeService(Supabase.instance.client);
 
-  runApp(MyApp(
-    trialRepository: trialRepository,
-    syncService: syncService,
-    connectivity: connectivity,
-    notificationBadge: notificationBadge,
-  ));
+  runApp(
+    MyApp(
+      trialRepository: trialRepository,
+      syncService: syncService,
+      connectivity: connectivity,
+      notificationBadge: notificationBadge,
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -102,165 +101,137 @@ class MyApp extends StatelessWidget {
       ),
       scaffoldBackgroundColor: subBackground,
       textTheme: GoogleFonts.montserratTextTheme().copyWith(
-        bodyLarge: GoogleFonts.montserrat(color: mainText, fontSize: 15),
-        bodyMedium: GoogleFonts.montserrat(color: mainText, fontSize: 14),
-        bodySmall: GoogleFonts.montserrat(color: otherText, fontSize: 13),
-        titleLarge: GoogleFonts.montserrat(color: navy, fontSize: 22, fontWeight: FontWeight.w600),
-        titleMedium: GoogleFonts.montserrat(color: navy, fontSize: 16, fontWeight: FontWeight.w600),
-        titleSmall: GoogleFonts.montserrat(color: navy, fontSize: 15, fontWeight: FontWeight.w600),
-        labelLarge: GoogleFonts.montserrat(color: background, fontSize: 14, fontWeight: FontWeight.w500),
+        bodyLarge: _font(15, color: mainText),
+        bodyMedium: _font(14, color: mainText),
+        bodySmall: _font(13, color: otherText),
+        titleLarge: _font(22, color: navy, weight: FontWeight.w600),
+        titleMedium: _font(16, color: navy, weight: FontWeight.w600),
+        titleSmall: _font(15, color: navy, weight: FontWeight.w600),
+        labelLarge: _font(14, color: background, weight: FontWeight.w500),
       ),
     );
 
     return base.copyWith(
-      // AppBar
       appBarTheme: AppBarTheme(
         backgroundColor: navy,
         foregroundColor: background,
         elevation: 0,
         shadowColor: Colors.black.withValues(alpha: 0.2),
-        titleTextStyle: GoogleFonts.montserrat(
-          color: background,
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
+        titleTextStyle: _font(16, color: background, weight: FontWeight.w600),
         iconTheme: const IconThemeData(color: background),
         actionsIconTheme: const IconThemeData(color: background),
       ),
 
-      // Cards
       cardTheme: CardThemeData(
         color: background,
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-          side: const BorderSide(color: border),
-        ),
+        shape: _rounded(8, const BorderSide(color: border)),
         margin: EdgeInsets.zero,
       ),
 
-      // Elevated buttons (primary)
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: navy,
           foregroundColor: background,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          textStyle: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w500),
+          shape: _rounded(8),
+          textStyle: _font(14, weight: FontWeight.w500),
         ),
       ),
 
-      // Text buttons
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: lightNavy,
-          textStyle: GoogleFonts.montserrat(fontSize: 13, fontWeight: FontWeight.w500),
+          textStyle: _font(13, weight: FontWeight.w500),
         ),
       ),
 
-      // Outlined buttons
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
           foregroundColor: navy,
           side: const BorderSide(color: border),
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          textStyle: GoogleFonts.montserrat(fontSize: 14, fontWeight: FontWeight.w500),
+          shape: _rounded(8),
+          textStyle: _font(14, weight: FontWeight.w500),
         ),
       ),
 
-      // Input fields
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: background,
         contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: lightNavy, width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: error),
-        ),
-        labelStyle: GoogleFonts.montserrat(color: otherText, fontSize: 13, fontWeight: FontWeight.w500),
-        hintStyle: GoogleFonts.montserrat(color: otherText, fontSize: 14),
+        border: _outline(border),
+        enabledBorder: _outline(border),
+        focusedBorder: _outline(lightNavy, 1.5),
+        errorBorder: _outline(error),
+        labelStyle: _font(13, color: otherText, weight: FontWeight.w500),
+        hintStyle: _font(14, color: otherText),
       ),
 
-      // Chips
       chipTheme: ChipThemeData(
         backgroundColor: subBackground,
-        labelStyle: GoogleFonts.montserrat(fontSize: 12),
+        labelStyle: _font(12),
         side: const BorderSide(color: border),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: _rounded(20),
       ),
 
-      // Divider
-      dividerTheme: const DividerThemeData(
-        color: border,
-        thickness: 1,
-        space: 0,
-      ),
+      dividerTheme: const DividerThemeData(color: border, thickness: 1, space: 0),
 
-      // List tiles
       listTileTheme: ListTileThemeData(
         tileColor: background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        titleTextStyle: GoogleFonts.montserrat(color: mainText, fontSize: 14, fontWeight: FontWeight.w500),
-        subtitleTextStyle: GoogleFonts.montserrat(color: otherText, fontSize: 13),
+        shape: _rounded(8),
+        titleTextStyle: _font(14, color: mainText, weight: FontWeight.w500),
+        subtitleTextStyle: _font(13, color: otherText),
       ),
 
-      // Floating action button
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: navy,
         foregroundColor: background,
         elevation: 2,
       ),
 
-      // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: midNavy,
-        contentTextStyle: GoogleFonts.montserrat(color: background, fontSize: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        contentTextStyle: _font(14, color: background),
+        shape: _rounded(8),
         behavior: SnackBarBehavior.floating,
       ),
 
-      // Dialog
       dialogTheme: DialogThemeData(
         backgroundColor: background,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        titleTextStyle: GoogleFonts.montserrat(color: navy, fontSize: 16, fontWeight: FontWeight.w600),
-        contentTextStyle: GoogleFonts.montserrat(color: mainText, fontSize: 14),
+        shape: _rounded(12),
+        titleTextStyle: _font(16, color: navy, weight: FontWeight.w600),
+        contentTextStyle: _font(14, color: mainText),
       ),
 
-      // DataTable
       dataTableTheme: DataTableThemeData(
-        headingTextStyle: GoogleFonts.montserrat(
-          color: otherText,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          letterSpacing: 0.5,
-        ),
-        dataTextStyle: GoogleFonts.montserrat(color: mainText, fontSize: 14),
+        headingTextStyle: _font(12, color: otherText, weight: FontWeight.w600, letterSpacing: 0.5),
+        dataTextStyle: _font(14, color: mainText),
         headingRowColor: WidgetStateProperty.all(const Color(0xFFF8FAFC)),
         dividerThickness: 1,
       ),
 
-      // Progress indicator
-      progressIndicatorTheme: const ProgressIndicatorThemeData(
-        color: lightNavy,
-      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: lightNavy),
     );
   }
 }
+
+TextStyle _font(double size, {Color? color, FontWeight? weight, double? letterSpacing}) =>
+    GoogleFonts.montserrat(
+      fontSize: size,
+      color: color,
+      fontWeight: weight,
+      letterSpacing: letterSpacing,
+    );
+
+RoundedRectangleBorder _rounded(double radius, [BorderSide side = BorderSide.none]) =>
+    RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius), side: side);
+
+OutlineInputBorder _outline(Color color, [double width = 1]) => OutlineInputBorder(
+  borderRadius: BorderRadius.circular(8),
+  borderSide: BorderSide(color: color, width: width),
+);
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});
@@ -271,9 +242,7 @@ class AuthGate extends StatelessWidget {
       stream: Supabase.instance.client.auth.onAuthStateChange,
       builder: (context, snapshot) {
         if (snapshot.hasData && snapshot.data!.session != null) {
-          // Fire-and-forget: populates the header's notification badge as
-          // soon as there's a session, rather than waiting for whichever
-          // screen happens to load first to fetch it.
+          // Fire-and-forget so the header badge fills in as soon as there's a session.
           AppServices.of(context).notificationBadge.refresh();
           return const SyncStatusBanner(child: DashboardScreen());
         }

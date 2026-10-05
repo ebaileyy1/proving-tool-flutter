@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Single source of truth for the app's palette. Previously these values
-/// were declared locally inside `main.dart`'s `_buildTheme()` and then
-/// re-typed as raw hex literals in every screen — centralizing them here
-/// means a rebrand is a one-file change instead of a project-wide grep.
+/// The app's colour palette.
 class AppColors {
   AppColors._();
 
-  // Exact brand values from the "Prove It" / Line of Sight logo: navy
-  // #111C5B and accent #5090AD. midNavy/lightNavy are interpolated
-  // in-between steps (not separately specified) so the palette still has
-  // a smooth navy-to-accent range for secondary UI elements.
+  // navy and accent come from the logo; midNavy/lightNavy are just steps between them.
   static const navy = Color(0xFF111C5B);
   static const midNavy = Color(0xFF243F74);
   static const lightNavy = Color(0xFF3A6790);

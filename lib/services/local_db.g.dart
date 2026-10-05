@@ -3,15 +3,12 @@
 part of 'local_db.dart';
 
 // ignore_for_file: type=lint
-class $PendingTrialsTable extends PendingTrials
-    with TableInfo<$PendingTrialsTable, PendingTrial> {
+class $PendingTrialsTable extends PendingTrials with TableInfo<$PendingTrialsTable, PendingTrial> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PendingTrialsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _localIdMeta = const VerificationMeta(
-    'localId',
-  );
+  static const VerificationMeta _localIdMeta = const VerificationMeta('localId');
   @override
   late final GeneratedColumn<String> localId = GeneratedColumn<String>(
     'local_id',
@@ -20,9 +17,7 @@ class $PendingTrialsTable extends PendingTrials
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _remoteIdMeta = const VerificationMeta(
-    'remoteId',
-  );
+  static const VerificationMeta _remoteIdMeta = const VerificationMeta('remoteId');
   @override
   late final GeneratedColumn<int> remoteId = GeneratedColumn<int>(
     'remote_id',
@@ -31,9 +26,7 @@ class $PendingTrialsTable extends PendingTrials
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _operationMeta = const VerificationMeta(
-    'operation',
-  );
+  static const VerificationMeta _operationMeta = const VerificationMeta('operation');
   @override
   late final GeneratedColumn<String> operation = GeneratedColumn<String>(
     'operation',
@@ -42,9 +35,7 @@ class $PendingTrialsTable extends PendingTrials
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _payloadJsonMeta = const VerificationMeta(
-    'payloadJson',
-  );
+  static const VerificationMeta _payloadJsonMeta = const VerificationMeta('payloadJson');
   @override
   late final GeneratedColumn<String> payloadJson = GeneratedColumn<String>(
     'payload_json',
@@ -53,9 +44,7 @@ class $PendingTrialsTable extends PendingTrials
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _syncStatusMeta = const VerificationMeta(
-    'syncStatus',
-  );
+  static const VerificationMeta _syncStatusMeta = const VerificationMeta('syncStatus');
   @override
   late final GeneratedColumn<String> syncStatus = GeneratedColumn<String>(
     'sync_status',
@@ -65,9 +54,7 @@ class $PendingTrialsTable extends PendingTrials
     requiredDuringInsert: false,
     defaultValue: const Constant(SyncStatus.pending),
   );
-  static const VerificationMeta _errorMessageMeta = const VerificationMeta(
-    'errorMessage',
-  );
+  static const VerificationMeta _errorMessageMeta = const VerificationMeta('errorMessage');
   @override
   late final GeneratedColumn<String> errorMessage = GeneratedColumn<String>(
     'error_message',
@@ -76,9 +63,7 @@ class $PendingTrialsTable extends PendingTrials
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -87,9 +72,7 @@ class $PendingTrialsTable extends PendingTrials
     type: DriftSqlType.dateTime,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
-    'updatedAt',
-  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta('updatedAt');
   @override
   late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
     'updated_at',
@@ -122,10 +105,7 @@ class $PendingTrialsTable extends PendingTrials
     final context = VerificationContext();
     final data = instance.toColumns(true);
     if (data.containsKey('local_id')) {
-      context.handle(
-        _localIdMeta,
-        localId.isAcceptableOrUnknown(data['local_id']!, _localIdMeta),
-      );
+      context.handle(_localIdMeta, localId.isAcceptableOrUnknown(data['local_id']!, _localIdMeta));
     } else if (isInserting) {
       context.missing(_localIdMeta);
     }
@@ -146,10 +126,7 @@ class $PendingTrialsTable extends PendingTrials
     if (data.containsKey('payload_json')) {
       context.handle(
         _payloadJsonMeta,
-        payloadJson.isAcceptableOrUnknown(
-          data['payload_json']!,
-          _payloadJsonMeta,
-        ),
+        payloadJson.isAcceptableOrUnknown(data['payload_json']!, _payloadJsonMeta),
       );
     } else if (isInserting) {
       context.missing(_payloadJsonMeta);
@@ -163,10 +140,7 @@ class $PendingTrialsTable extends PendingTrials
     if (data.containsKey('error_message')) {
       context.handle(
         _errorMessageMeta,
-        errorMessage.isAcceptableOrUnknown(
-          data['error_message']!,
-          _errorMessageMeta,
-        ),
+        errorMessage.isAcceptableOrUnknown(data['error_message']!, _errorMessageMeta),
       );
     }
     if (data.containsKey('created_at')) {
@@ -275,9 +249,7 @@ class PendingTrial extends DataClass implements Insertable<PendingTrial> {
   PendingTrialsCompanion toCompanion(bool nullToAbsent) {
     return PendingTrialsCompanion(
       localId: Value(localId),
-      remoteId: remoteId == null && nullToAbsent
-          ? const Value.absent()
-          : Value(remoteId),
+      remoteId: remoteId == null && nullToAbsent ? const Value.absent() : Value(remoteId),
       operation: Value(operation),
       payloadJson: Value(payloadJson),
       syncStatus: Value(syncStatus),
@@ -289,10 +261,7 @@ class PendingTrial extends DataClass implements Insertable<PendingTrial> {
     );
   }
 
-  factory PendingTrial.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory PendingTrial.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PendingTrial(
       localId: serializer.fromJson<String>(json['localId']),
@@ -344,15 +313,9 @@ class PendingTrial extends DataClass implements Insertable<PendingTrial> {
       localId: data.localId.present ? data.localId.value : this.localId,
       remoteId: data.remoteId.present ? data.remoteId.value : this.remoteId,
       operation: data.operation.present ? data.operation.value : this.operation,
-      payloadJson: data.payloadJson.present
-          ? data.payloadJson.value
-          : this.payloadJson,
-      syncStatus: data.syncStatus.present
-          ? data.syncStatus.value
-          : this.syncStatus,
-      errorMessage: data.errorMessage.present
-          ? data.errorMessage.value
-          : this.errorMessage,
+      payloadJson: data.payloadJson.present ? data.payloadJson.value : this.payloadJson,
+      syncStatus: data.syncStatus.present ? data.syncStatus.value : this.syncStatus,
+      errorMessage: data.errorMessage.present ? data.errorMessage.value : this.errorMessage,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -532,8 +495,7 @@ class PendingTrialsCompanion extends UpdateCompanion<PendingTrial> {
   }
 }
 
-class $PendingFilesTable extends PendingFiles
-    with TableInfo<$PendingFilesTable, PendingFile> {
+class $PendingFilesTable extends PendingFiles with TableInfo<$PendingFilesTable, PendingFile> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -547,9 +509,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _trialLocalIdMeta = const VerificationMeta(
-    'trialLocalId',
-  );
+  static const VerificationMeta _trialLocalIdMeta = const VerificationMeta('trialLocalId');
   @override
   late final GeneratedColumn<String> trialLocalId = GeneratedColumn<String>(
     'trial_local_id',
@@ -558,9 +518,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _trialRemoteIdMeta = const VerificationMeta(
-    'trialRemoteId',
-  );
+  static const VerificationMeta _trialRemoteIdMeta = const VerificationMeta('trialRemoteId');
   @override
   late final GeneratedColumn<int> trialRemoteId = GeneratedColumn<int>(
     'trial_remote_id',
@@ -569,9 +527,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.int,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _categoryMeta = const VerificationMeta(
-    'category',
-  );
+  static const VerificationMeta _categoryMeta = const VerificationMeta('category');
   @override
   late final GeneratedColumn<String> category = GeneratedColumn<String>(
     'category',
@@ -580,9 +536,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _originalNameMeta = const VerificationMeta(
-    'originalName',
-  );
+  static const VerificationMeta _originalNameMeta = const VerificationMeta('originalName');
   @override
   late final GeneratedColumn<String> originalName = GeneratedColumn<String>(
     'original_name',
@@ -591,9 +545,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _mimeTypeMeta = const VerificationMeta(
-    'mimeType',
-  );
+  static const VerificationMeta _mimeTypeMeta = const VerificationMeta('mimeType');
   @override
   late final GeneratedColumn<String> mimeType = GeneratedColumn<String>(
     'mime_type',
@@ -602,9 +554,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _localFilePathMeta = const VerificationMeta(
-    'localFilePath',
-  );
+  static const VerificationMeta _localFilePathMeta = const VerificationMeta('localFilePath');
   @override
   late final GeneratedColumn<String> localFilePath = GeneratedColumn<String>(
     'local_file_path',
@@ -613,9 +563,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _fileSizeBytesMeta = const VerificationMeta(
-    'fileSizeBytes',
-  );
+  static const VerificationMeta _fileSizeBytesMeta = const VerificationMeta('fileSizeBytes');
   @override
   late final GeneratedColumn<int> fileSizeBytes = GeneratedColumn<int>(
     'file_size_bytes',
@@ -624,9 +572,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _uploadStatusMeta = const VerificationMeta(
-    'uploadStatus',
-  );
+  static const VerificationMeta _uploadStatusMeta = const VerificationMeta('uploadStatus');
   @override
   late final GeneratedColumn<String> uploadStatus = GeneratedColumn<String>(
     'upload_status',
@@ -636,9 +582,7 @@ class $PendingFilesTable extends PendingFiles
     requiredDuringInsert: false,
     defaultValue: const Constant(SyncStatus.pending),
   );
-  static const VerificationMeta _errorMessageMeta = const VerificationMeta(
-    'errorMessage',
-  );
+  static const VerificationMeta _errorMessageMeta = const VerificationMeta('errorMessage');
   @override
   late final GeneratedColumn<String> errorMessage = GeneratedColumn<String>(
     'error_message',
@@ -647,9 +591,7 @@ class $PendingFilesTable extends PendingFiles
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _createdAtMeta = const VerificationMeta(
-    'createdAt',
-  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta('createdAt');
   @override
   late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
     'created_at',
@@ -692,19 +634,13 @@ class $PendingFilesTable extends PendingFiles
     if (data.containsKey('trial_local_id')) {
       context.handle(
         _trialLocalIdMeta,
-        trialLocalId.isAcceptableOrUnknown(
-          data['trial_local_id']!,
-          _trialLocalIdMeta,
-        ),
+        trialLocalId.isAcceptableOrUnknown(data['trial_local_id']!, _trialLocalIdMeta),
       );
     }
     if (data.containsKey('trial_remote_id')) {
       context.handle(
         _trialRemoteIdMeta,
-        trialRemoteId.isAcceptableOrUnknown(
-          data['trial_remote_id']!,
-          _trialRemoteIdMeta,
-        ),
+        trialRemoteId.isAcceptableOrUnknown(data['trial_remote_id']!, _trialRemoteIdMeta),
       );
     }
     if (data.containsKey('category')) {
@@ -718,10 +654,7 @@ class $PendingFilesTable extends PendingFiles
     if (data.containsKey('original_name')) {
       context.handle(
         _originalNameMeta,
-        originalName.isAcceptableOrUnknown(
-          data['original_name']!,
-          _originalNameMeta,
-        ),
+        originalName.isAcceptableOrUnknown(data['original_name']!, _originalNameMeta),
       );
     } else if (isInserting) {
       context.missing(_originalNameMeta);
@@ -735,10 +668,7 @@ class $PendingFilesTable extends PendingFiles
     if (data.containsKey('local_file_path')) {
       context.handle(
         _localFilePathMeta,
-        localFilePath.isAcceptableOrUnknown(
-          data['local_file_path']!,
-          _localFilePathMeta,
-        ),
+        localFilePath.isAcceptableOrUnknown(data['local_file_path']!, _localFilePathMeta),
       );
     } else if (isInserting) {
       context.missing(_localFilePathMeta);
@@ -746,10 +676,7 @@ class $PendingFilesTable extends PendingFiles
     if (data.containsKey('file_size_bytes')) {
       context.handle(
         _fileSizeBytesMeta,
-        fileSizeBytes.isAcceptableOrUnknown(
-          data['file_size_bytes']!,
-          _fileSizeBytesMeta,
-        ),
+        fileSizeBytes.isAcceptableOrUnknown(data['file_size_bytes']!, _fileSizeBytesMeta),
       );
     } else if (isInserting) {
       context.missing(_fileSizeBytesMeta);
@@ -757,19 +684,13 @@ class $PendingFilesTable extends PendingFiles
     if (data.containsKey('upload_status')) {
       context.handle(
         _uploadStatusMeta,
-        uploadStatus.isAcceptableOrUnknown(
-          data['upload_status']!,
-          _uploadStatusMeta,
-        ),
+        uploadStatus.isAcceptableOrUnknown(data['upload_status']!, _uploadStatusMeta),
       );
     }
     if (data.containsKey('error_message')) {
       context.handle(
         _errorMessageMeta,
-        errorMessage.isAcceptableOrUnknown(
-          data['error_message']!,
-          _errorMessageMeta,
-        ),
+        errorMessage.isAcceptableOrUnknown(data['error_message']!, _errorMessageMeta),
       );
     }
     if (data.containsKey('created_at')) {
@@ -789,10 +710,7 @@ class $PendingFilesTable extends PendingFiles
   PendingFile map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return PendingFile(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}id'],
-      )!,
+      id: attachedDatabase.typeMapping.read(DriftSqlType.string, data['${effectivePrefix}id'])!,
       trialLocalId: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}trial_local_id'],
@@ -903,9 +821,7 @@ class PendingFile extends DataClass implements Insertable<PendingFile> {
           : Value(trialRemoteId),
       category: Value(category),
       originalName: Value(originalName),
-      mimeType: mimeType == null && nullToAbsent
-          ? const Value.absent()
-          : Value(mimeType),
+      mimeType: mimeType == null && nullToAbsent ? const Value.absent() : Value(mimeType),
       localFilePath: Value(localFilePath),
       fileSizeBytes: Value(fileSizeBytes),
       uploadStatus: Value(uploadStatus),
@@ -916,10 +832,7 @@ class PendingFile extends DataClass implements Insertable<PendingFile> {
     );
   }
 
-  factory PendingFile.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
+  factory PendingFile.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PendingFile(
       id: serializer.fromJson<String>(json['id']),
@@ -968,9 +881,7 @@ class PendingFile extends DataClass implements Insertable<PendingFile> {
   }) => PendingFile(
     id: id ?? this.id,
     trialLocalId: trialLocalId.present ? trialLocalId.value : this.trialLocalId,
-    trialRemoteId: trialRemoteId.present
-        ? trialRemoteId.value
-        : this.trialRemoteId,
+    trialRemoteId: trialRemoteId.present ? trialRemoteId.value : this.trialRemoteId,
     category: category ?? this.category,
     originalName: originalName ?? this.originalName,
     mimeType: mimeType.present ? mimeType.value : this.mimeType,
@@ -983,29 +894,15 @@ class PendingFile extends DataClass implements Insertable<PendingFile> {
   PendingFile copyWithCompanion(PendingFilesCompanion data) {
     return PendingFile(
       id: data.id.present ? data.id.value : this.id,
-      trialLocalId: data.trialLocalId.present
-          ? data.trialLocalId.value
-          : this.trialLocalId,
-      trialRemoteId: data.trialRemoteId.present
-          ? data.trialRemoteId.value
-          : this.trialRemoteId,
+      trialLocalId: data.trialLocalId.present ? data.trialLocalId.value : this.trialLocalId,
+      trialRemoteId: data.trialRemoteId.present ? data.trialRemoteId.value : this.trialRemoteId,
       category: data.category.present ? data.category.value : this.category,
-      originalName: data.originalName.present
-          ? data.originalName.value
-          : this.originalName,
+      originalName: data.originalName.present ? data.originalName.value : this.originalName,
       mimeType: data.mimeType.present ? data.mimeType.value : this.mimeType,
-      localFilePath: data.localFilePath.present
-          ? data.localFilePath.value
-          : this.localFilePath,
-      fileSizeBytes: data.fileSizeBytes.present
-          ? data.fileSizeBytes.value
-          : this.fileSizeBytes,
-      uploadStatus: data.uploadStatus.present
-          ? data.uploadStatus.value
-          : this.uploadStatus,
-      errorMessage: data.errorMessage.present
-          ? data.errorMessage.value
-          : this.errorMessage,
+      localFilePath: data.localFilePath.present ? data.localFilePath.value : this.localFilePath,
+      fileSizeBytes: data.fileSizeBytes.present ? data.fileSizeBytes.value : this.fileSizeBytes,
+      uploadStatus: data.uploadStatus.present ? data.uploadStatus.value : this.uploadStatus,
+      errorMessage: data.errorMessage.present ? data.errorMessage.value : this.errorMessage,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -1236,10 +1133,7 @@ abstract class _$LocalDb extends GeneratedDatabase {
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [
-    pendingTrials,
-    pendingFiles,
-  ];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [pendingTrials, pendingFiles];
 }
 
 typedef $$PendingTrialsTableCreateCompanionBuilder =
@@ -1267,8 +1161,7 @@ typedef $$PendingTrialsTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $$PendingTrialsTableFilterComposer
-    extends Composer<_$LocalDb, $PendingTrialsTable> {
+class $$PendingTrialsTableFilterComposer extends Composer<_$LocalDb, $PendingTrialsTable> {
   $$PendingTrialsTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -1276,49 +1169,32 @@ class $$PendingTrialsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get localId => $composableBuilder(
-    column: $table.localId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get localId =>
+      $composableBuilder(column: $table.localId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get remoteId => $composableBuilder(
-    column: $table.remoteId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get remoteId =>
+      $composableBuilder(column: $table.remoteId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get operation => $composableBuilder(
-    column: $table.operation,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get operation =>
+      $composableBuilder(column: $table.operation, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get payloadJson => $composableBuilder(
-    column: $table.payloadJson,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get payloadJson =>
+      $composableBuilder(column: $table.payloadJson, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get syncStatus =>
+      $composableBuilder(column: $table.syncStatus, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get errorMessage => $composableBuilder(
-    column: $table.errorMessage,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get errorMessage =>
+      $composableBuilder(column: $table.errorMessage, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$PendingTrialsTableOrderingComposer
-    extends Composer<_$LocalDb, $PendingTrialsTable> {
+class $$PendingTrialsTableOrderingComposer extends Composer<_$LocalDb, $PendingTrialsTable> {
   $$PendingTrialsTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1326,49 +1202,32 @@ class $$PendingTrialsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get localId => $composableBuilder(
-    column: $table.localId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get localId =>
+      $composableBuilder(column: $table.localId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<int> get remoteId => $composableBuilder(
-    column: $table.remoteId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<int> get remoteId =>
+      $composableBuilder(column: $table.remoteId, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get operation => $composableBuilder(
-    column: $table.operation,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get operation =>
+      $composableBuilder(column: $table.operation, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get payloadJson => $composableBuilder(
-    column: $table.payloadJson,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get payloadJson =>
+      $composableBuilder(column: $table.payloadJson, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get syncStatus =>
+      $composableBuilder(column: $table.syncStatus, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get errorMessage => $composableBuilder(
-    column: $table.errorMessage,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get errorMessage =>
+      $composableBuilder(column: $table.errorMessage, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
-    column: $table.updatedAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$PendingTrialsTableAnnotationComposer
-    extends Composer<_$LocalDb, $PendingTrialsTable> {
+class $$PendingTrialsTableAnnotationComposer extends Composer<_$LocalDb, $PendingTrialsTable> {
   $$PendingTrialsTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1385,20 +1244,14 @@ class $$PendingTrialsTableAnnotationComposer
   GeneratedColumn<String> get operation =>
       $composableBuilder(column: $table.operation, builder: (column) => column);
 
-  GeneratedColumn<String> get payloadJson => $composableBuilder(
-    column: $table.payloadJson,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get payloadJson =>
+      $composableBuilder(column: $table.payloadJson, builder: (column) => column);
 
-  GeneratedColumn<String> get syncStatus => $composableBuilder(
-    column: $table.syncStatus,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get syncStatus =>
+      $composableBuilder(column: $table.syncStatus, builder: (column) => column);
 
-  GeneratedColumn<String> get errorMessage => $composableBuilder(
-    column: $table.errorMessage,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get errorMessage =>
+      $composableBuilder(column: $table.errorMessage, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -1418,10 +1271,7 @@ class $$PendingTrialsTableTableManager
           $$PendingTrialsTableAnnotationComposer,
           $$PendingTrialsTableCreateCompanionBuilder,
           $$PendingTrialsTableUpdateCompanionBuilder,
-          (
-            PendingTrial,
-            BaseReferences<_$LocalDb, $PendingTrialsTable, PendingTrial>,
-          ),
+          (PendingTrial, BaseReferences<_$LocalDb, $PendingTrialsTable, PendingTrial>),
           PendingTrial,
           PrefetchHooks Function()
         > {
@@ -1430,8 +1280,7 @@ class $$PendingTrialsTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$PendingTrialsTableFilterComposer($db: db, $table: table),
+          createFilteringComposer: () => $$PendingTrialsTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
               $$PendingTrialsTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
@@ -1480,9 +1329,8 @@ class $$PendingTrialsTableTableManager
                 updatedAt: updatedAt,
                 rowid: rowid,
               ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
           prefetchHooksCallback: null,
         ),
       );
@@ -1498,10 +1346,7 @@ typedef $$PendingTrialsTableProcessedTableManager =
       $$PendingTrialsTableAnnotationComposer,
       $$PendingTrialsTableCreateCompanionBuilder,
       $$PendingTrialsTableUpdateCompanionBuilder,
-      (
-        PendingTrial,
-        BaseReferences<_$LocalDb, $PendingTrialsTable, PendingTrial>,
-      ),
+      (PendingTrial, BaseReferences<_$LocalDb, $PendingTrialsTable, PendingTrial>),
       PendingTrial,
       PrefetchHooks Function()
     >;
@@ -1536,8 +1381,7 @@ typedef $$PendingFilesTableUpdateCompanionBuilder =
       Value<int> rowid,
     });
 
-class $$PendingFilesTableFilterComposer
-    extends Composer<_$LocalDb, $PendingFilesTable> {
+class $$PendingFilesTableFilterComposer extends Composer<_$LocalDb, $PendingFilesTable> {
   $$PendingFilesTableFilterComposer({
     required super.$db,
     required super.$table,
@@ -1545,64 +1389,41 @@ class $$PendingFilesTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get trialLocalId => $composableBuilder(
-    column: $table.trialLocalId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get trialLocalId =>
+      $composableBuilder(column: $table.trialLocalId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get trialRemoteId => $composableBuilder(
-    column: $table.trialRemoteId,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get trialRemoteId =>
+      $composableBuilder(column: $table.trialRemoteId, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get category => $composableBuilder(
-    column: $table.category,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get originalName => $composableBuilder(
-    column: $table.originalName,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get originalName =>
+      $composableBuilder(column: $table.originalName, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get mimeType => $composableBuilder(
-    column: $table.mimeType,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get mimeType =>
+      $composableBuilder(column: $table.mimeType, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get localFilePath => $composableBuilder(
-    column: $table.localFilePath,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get localFilePath =>
+      $composableBuilder(column: $table.localFilePath, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<int> get fileSizeBytes => $composableBuilder(
-    column: $table.fileSizeBytes,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<int> get fileSizeBytes =>
+      $composableBuilder(column: $table.fileSizeBytes, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get uploadStatus => $composableBuilder(
-    column: $table.uploadStatus,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get uploadStatus =>
+      $composableBuilder(column: $table.uploadStatus, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get errorMessage => $composableBuilder(
-    column: $table.errorMessage,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<String> get errorMessage =>
+      $composableBuilder(column: $table.errorMessage, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnFilters(column),
-  );
+  ColumnFilters<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnFilters(column));
 }
 
-class $$PendingFilesTableOrderingComposer
-    extends Composer<_$LocalDb, $PendingFilesTable> {
+class $$PendingFilesTableOrderingComposer extends Composer<_$LocalDb, $PendingFilesTable> {
   $$PendingFilesTableOrderingComposer({
     required super.$db,
     required super.$table,
@@ -1610,35 +1431,25 @@ class $$PendingFilesTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<String> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get trialLocalId => $composableBuilder(
-    column: $table.trialLocalId,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get trialLocalId =>
+      $composableBuilder(column: $table.trialLocalId, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<int> get trialRemoteId => $composableBuilder(
     column: $table.trialRemoteId,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get category => $composableBuilder(
-    column: $table.category,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get category =>
+      $composableBuilder(column: $table.category, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get originalName => $composableBuilder(
-    column: $table.originalName,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get originalName =>
+      $composableBuilder(column: $table.originalName, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get mimeType => $composableBuilder(
-    column: $table.mimeType,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get mimeType =>
+      $composableBuilder(column: $table.mimeType, builder: (column) => ColumnOrderings(column));
 
   ColumnOrderings<String> get localFilePath => $composableBuilder(
     column: $table.localFilePath,
@@ -1650,24 +1461,17 @@ class $$PendingFilesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get uploadStatus => $composableBuilder(
-    column: $table.uploadStatus,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get uploadStatus =>
+      $composableBuilder(column: $table.uploadStatus, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get errorMessage => $composableBuilder(
-    column: $table.errorMessage,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<String> get errorMessage =>
+      $composableBuilder(column: $table.errorMessage, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
-    column: $table.createdAt,
-    builder: (column) => ColumnOrderings(column),
-  );
+  ColumnOrderings<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => ColumnOrderings(column));
 }
 
-class $$PendingFilesTableAnnotationComposer
-    extends Composer<_$LocalDb, $PendingFilesTable> {
+class $$PendingFilesTableAnnotationComposer extends Composer<_$LocalDb, $PendingFilesTable> {
   $$PendingFilesTableAnnotationComposer({
     required super.$db,
     required super.$table,
@@ -1678,46 +1482,32 @@ class $$PendingFilesTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get trialLocalId => $composableBuilder(
-    column: $table.trialLocalId,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get trialLocalId =>
+      $composableBuilder(column: $table.trialLocalId, builder: (column) => column);
 
-  GeneratedColumn<int> get trialRemoteId => $composableBuilder(
-    column: $table.trialRemoteId,
-    builder: (column) => column,
-  );
+  GeneratedColumn<int> get trialRemoteId =>
+      $composableBuilder(column: $table.trialRemoteId, builder: (column) => column);
 
   GeneratedColumn<String> get category =>
       $composableBuilder(column: $table.category, builder: (column) => column);
 
-  GeneratedColumn<String> get originalName => $composableBuilder(
-    column: $table.originalName,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get originalName =>
+      $composableBuilder(column: $table.originalName, builder: (column) => column);
 
   GeneratedColumn<String> get mimeType =>
       $composableBuilder(column: $table.mimeType, builder: (column) => column);
 
-  GeneratedColumn<String> get localFilePath => $composableBuilder(
-    column: $table.localFilePath,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get localFilePath =>
+      $composableBuilder(column: $table.localFilePath, builder: (column) => column);
 
-  GeneratedColumn<int> get fileSizeBytes => $composableBuilder(
-    column: $table.fileSizeBytes,
-    builder: (column) => column,
-  );
+  GeneratedColumn<int> get fileSizeBytes =>
+      $composableBuilder(column: $table.fileSizeBytes, builder: (column) => column);
 
-  GeneratedColumn<String> get uploadStatus => $composableBuilder(
-    column: $table.uploadStatus,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get uploadStatus =>
+      $composableBuilder(column: $table.uploadStatus, builder: (column) => column);
 
-  GeneratedColumn<String> get errorMessage => $composableBuilder(
-    column: $table.errorMessage,
-    builder: (column) => column,
-  );
+  GeneratedColumn<String> get errorMessage =>
+      $composableBuilder(column: $table.errorMessage, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -1734,10 +1524,7 @@ class $$PendingFilesTableTableManager
           $$PendingFilesTableAnnotationComposer,
           $$PendingFilesTableCreateCompanionBuilder,
           $$PendingFilesTableUpdateCompanionBuilder,
-          (
-            PendingFile,
-            BaseReferences<_$LocalDb, $PendingFilesTable, PendingFile>,
-          ),
+          (PendingFile, BaseReferences<_$LocalDb, $PendingFilesTable, PendingFile>),
           PendingFile,
           PrefetchHooks Function()
         > {
@@ -1746,10 +1533,8 @@ class $$PendingFilesTableTableManager
         TableManagerState(
           db: db,
           table: table,
-          createFilteringComposer: () =>
-              $$PendingFilesTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$PendingFilesTableOrderingComposer($db: db, $table: table),
+          createFilteringComposer: () => $$PendingFilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () => $$PendingFilesTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
               $$PendingFilesTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
@@ -1808,9 +1593,8 @@ class $$PendingFilesTableTableManager
                 createdAt: createdAt,
                 rowid: rowid,
               ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
+          withReferenceMapper: (p0) =>
+              p0.map((e) => (e.readTable(table), BaseReferences(db, table, e))).toList(),
           prefetchHooksCallback: null,
         ),
       );

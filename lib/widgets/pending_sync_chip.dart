@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 
-/// Small badge shown on a trial list item that hasn't synced to Supabase
-/// yet (or failed to).
+/// Badge for a trial that hasn't synced yet, or failed to.
 class PendingSyncChip extends StatelessWidget {
   const PendingSyncChip({super.key, this.hasError = false});
 
@@ -21,19 +20,11 @@ class PendingSyncChip extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            hasError ? Icons.error_outline : Icons.cloud_off,
-            size: 12,
-            color: color,
-          ),
+          Icon(hasError ? Icons.error_outline : Icons.cloud_off, size: 12, color: color),
           const SizedBox(width: 4),
           Text(
             hasError ? 'Sync failed' : 'Pending sync',
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w600,
-              color: color,
-            ),
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color),
           ),
         ],
       ),

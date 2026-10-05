@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:proving_tool/models/trial.dart';
 import 'package:proving_tool/services/app_services.dart';
 import 'package:proving_tool/theme/app_colors.dart';
+import 'package:proving_tool/utils/ui_helpers.dart';
+import 'package:proving_tool/widgets/loading_button.dart';
 import 'package:proving_tool/widgets/trial_form.dart';
 
-/// Quick "how did it go?" flow for a trial whose date has arrived — just
-/// the status choice and the three post-trial fields, not the full edit
-/// form, so logging an outcome from the dashboard is a couple of taps
-/// instead of reopening every field. Returns `true` if an outcome was
-/// saved, `null`/`false` if dismissed.
+/// Quick outcome sheet (status plus the post-trial fields) for a trial whose
+/// date has arrived. Returns true if saved.
 Future<bool?> showAddOutcomeSheet(BuildContext context, TrialListItem item) {
   return showModalBottomSheet<bool>(
     context: context,
@@ -53,15 +52,21 @@ class _AddOutcomeSheetState extends State<_AddOutcomeSheet> {
       );
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving outcome: $e')),
-        );
-      }
+      if (mounted) showMessage(context, 'Error saving outcome: $e');
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
   }
+
+  Widget _choice(String status, IconData icon, Color color) => Expanded(
+    child: _OutcomeChoiceButton(
+      label: status,
+      icon: icon,
+      color: color,
+      selected: _form.status == status,
+      onTap: () => setState(() => _form.status = status),
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -102,25 +107,9 @@ class _AddOutcomeSheetState extends State<_AddOutcomeSheet> {
             const SizedBox(height: 16),
             Row(
               children: [
-                Expanded(
-                  child: _OutcomeChoiceButton(
-                    label: 'Completed',
-                    icon: Icons.check_circle,
-                    color: AppColors.success,
-                    selected: _form.status == 'Completed',
-                    onTap: () => setState(() => _form.status = 'Completed'),
-                  ),
-                ),
+                _choice('Completed', Icons.check_circle, AppColors.success),
                 const SizedBox(width: 12),
-                Expanded(
-                  child: _OutcomeChoiceButton(
-                    label: 'Failed',
-                    icon: Icons.cancel,
-                    color: AppColors.error,
-                    selected: _form.status == 'Failed',
-                    onTap: () => setState(() => _form.status = 'Failed'),
-                  ),
-                ),
+                _choice('Failed', Icons.cancel, AppColors.error),
               ],
             ),
             if (canSave) ...[
@@ -147,18 +136,11 @@ class _AddOutcomeSheetState extends State<_AddOutcomeSheet> {
               ),
             ],
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: (!canSave || _isSaving) ? null : _save,
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(vertical: 14),
-              ),
-              child: _isSaving
-                  ? const SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                    )
-                  : const Text('Save Outcome'),
+            LoadingButton(
+              isLoading: _isSaving,
+              onPressed: canSave ? _save : null,
+              label: 'Save Outcome',
+              padding: const EdgeInsets.symmetric(vertical: 14),
             ),
             const SizedBox(height: 8),
             TextButton(
@@ -197,10 +179,7 @@ class _OutcomeChoiceButton extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected ? color.withValues(alpha: 0.12) : AppColors.subBackground,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: selected ? color : AppColors.border,
-            width: selected ? 2 : 1,
-          ),
+          border: Border.all(color: selected ? color : AppColors.border, width: selected ? 2 : 1),
         ),
         child: Column(
           children: [

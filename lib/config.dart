@@ -1,6 +1,4 @@
-/// Central Supabase project configuration, shared by app bootstrap
-/// ([main.dart]), the PDF exporter (which builds public storage URLs) and
-/// the offline connectivity probe (which needs a host to reach).
+/// Supabase project config. [host] is what the connectivity probe looks up.
 class SupabaseConfig {
   static const url = 'https://wcviqsddmurfohpbmomj.supabase.co';
   static const anonKey =

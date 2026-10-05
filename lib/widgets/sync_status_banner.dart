@@ -8,11 +8,8 @@ import 'package:proving_tool/theme/app_colors.dart';
 
 enum _BannerState { offline, syncing, justSynced }
 
-/// Slim, animated bar shown above the app whenever there's something to
-/// tell the user about connectivity/sync: offline, actively syncing, or a
-/// brief "all changes synced" confirmation. Collapses to nothing the rest
-/// of the time. Wraps the authenticated part of the app once in `main.dart`
-/// so no individual screen needs to know about it.
+/// Bar above the app showing offline, syncing, or a brief "all changes
+/// synced" state. Wrapped around the logged-in app once in main.dart.
 class SyncStatusBanner extends StatefulWidget {
   const SyncStatusBanner({super.key, required this.child});
 
@@ -71,10 +68,7 @@ class _SyncStatusBannerState extends State<SyncStatusBanner> {
     );
   }
 
-  _BannerState? _resolveState({
-    required bool isOnline,
-    required SyncSummary summary,
-  }) {
+  _BannerState? _resolveState({required bool isOnline, required SyncSummary summary}) {
     if (!isOnline) {
       _showJustSynced = false;
       _dismissTimer?.cancel();
@@ -87,8 +81,7 @@ class _SyncStatusBannerState extends State<SyncStatusBanner> {
       return _BannerState.syncing;
     }
 
-    if (summary.lastSyncedAt != null &&
-        summary.lastSyncedAt != _lastSeenSyncedAt) {
+    if (summary.lastSyncedAt != null && summary.lastSyncedAt != _lastSeenSyncedAt) {
       _lastSeenSyncedAt = summary.lastSyncedAt;
       _showJustSynced = true;
       _dismissTimer?.cancel();
@@ -113,8 +106,7 @@ class _Bar extends StatelessWidget {
       _BannerState.offline => _BarConfig(
         background: AppColors.otherText,
         icon: Icons.cloud_off,
-        label:
-            "Offline — changes will be saved and sent when you're back online",
+        label: "Offline - changes will be saved and sent when you're back online",
       ),
       _BannerState.syncing => _BarConfig(
         background: AppColors.navy,
@@ -136,9 +128,9 @@ class _Bar extends StatelessWidget {
       child: Material(
         color: config.background,
         child: InkWell(
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(builder: (_) => const PendingUploadsScreen()),
-          ),
+          onTap: () => Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const PendingUploadsScreen())),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
@@ -159,10 +151,7 @@ class _Bar extends StatelessWidget {
                   const SizedBox(
                     width: 14,
                     height: 14,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Colors.white,
-                    ),
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                   ),
               ],
             ),

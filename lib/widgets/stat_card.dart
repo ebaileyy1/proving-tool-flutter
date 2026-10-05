@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:proving_tool/theme/app_colors.dart';
 
-/// A big-number-over-label stat tile, used for the Dashboard's trial
-/// counts and the Admin screen's user counts. Optionally tappable with a
-/// selected-highlight state (Dashboard uses this to filter by status;
-/// Admin's are purely informational and just omit [onTap]).
+/// Big number over a label. Tappable when [onTap] is set. The caller picks
+/// [trendColor] because up can be good or bad depending on the stat.
 class StatCard extends StatelessWidget {
   const StatCard({
     super.key,
@@ -13,6 +11,8 @@ class StatCard extends StatelessWidget {
     required this.color,
     this.onTap,
     this.isSelected = false,
+    this.trendLabel,
+    this.trendColor,
   });
 
   final String label;
@@ -20,29 +20,45 @@ class StatCard extends StatelessWidget {
   final Color color;
   final VoidCallback? onTap;
   final bool isSelected;
+  final String? trendLabel;
+  final Color? trendColor;
 
   @override
   Widget build(BuildContext context) {
+    final valueStyle = TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: color);
     final card = Card(
       color: isSelected ? color.withValues(alpha: 0.15) : null,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: isSelected
-            ? BorderSide(color: color, width: 2)
-            : BorderSide.none,
+        side: isSelected ? BorderSide(color: color, width: 2) : BorderSide.none,
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: color,
+            if (trendLabel == null)
+              Text(value, style: valueStyle)
+            else
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.baseline,
+                textBaseline: TextBaseline.alphabetic,
+                children: [
+                  Text(
+                    value,
+                    style: valueStyle.copyWith(fontFeatures: const [FontFeature.tabularFigures()]),
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    trendLabel!,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: trendColor ?? AppColors.otherText,
+                    ),
+                  ),
+                ],
               ),
-            ),
             const SizedBox(height: 4),
             Text(
               label,

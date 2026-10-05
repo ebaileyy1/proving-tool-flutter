@@ -1,8 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:proving_tool/utils/file_types.dart';
 
-/// A file picked by the user, decoupled from `file_picker`'s `PlatformFile`
-/// so the repository/sync layer don't need to import UI picker types.
+/// A picked file, so the sync layer doesn't depend on file_picker types.
 class PickedFileAttachment {
   const PickedFileAttachment({required this.name, required this.bytes});
 
@@ -25,10 +24,7 @@ class PickedFileAttachment {
   String get extension => extensionOf(name);
 }
 
-/// One trial as rendered by list screens: either a normal row fetched from
-/// Supabase, or a locally created/edited row still waiting to sync.
-/// [data] keeps the same map shape screens already render via
-/// `trial['field']`, so existing rendering code needs minimal changes.
+/// A trial row for list screens, either from Supabase or a local one waiting to sync.
 class TrialListItem {
   const TrialListItem({
     required this.data,
@@ -43,7 +39,7 @@ class TrialListItem {
   final bool hasSyncError;
   final String? errorMessage;
 
-  /// Set only while this trial has no server-assigned id yet.
+  // Only set until the server assigns an id.
   final String? localId;
 
   int? get remoteId {
@@ -92,15 +88,22 @@ class SyncSummary {
   }
 }
 
-/// Thrown when an action (delete, PDF export, etc.) is attempted while
-/// offline but has no offline-capable path.
+/// Thrown when an action has no offline path and the device is offline.
 class OfflineUnsupportedException implements Exception {
-  const OfflineUnsupportedException([
-    this.message = 'This action needs an internet connection.',
-  ]);
+  const OfflineUnsupportedException([this.message = 'This action needs an internet connection.']);
 
   final String message;
 
   @override
   String toString() => message;
+}
+
+/// Thrown when the server's `updated_at` has moved on since the editor loaded the trial.
+class TrialConflictException implements Exception {
+  const TrialConflictException(this.serverUpdatedAt);
+
+  final String? serverUpdatedAt;
+
+  @override
+  String toString() => 'This trial was changed by someone else - review before retrying.';
 }

@@ -40,6 +40,8 @@ flutter:
   assets:
     - assets/logo.png
     - assets/logo_icon.png
+    - assets/fonts/Montserrat-Regular.ttf
+    - assets/fonts/Montserrat-Bold.ttf
 
 flutter_launcher_icons:
   android: true

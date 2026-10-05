@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
@@ -15,17 +16,14 @@ class SyncStatus {
   static const error = 'error';
 }
 
-/// A trial that was created or edited while offline (or that failed to sync
-/// yet) and needs to be pushed to Supabase. `payloadJson` is the exact map
-/// that would otherwise have been passed straight to `.insert()`/`.update()`
-/// so the outbox never needs to know about individual trial fields.
+/// Queued trial create/update. `payloadJson` is the map that would have gone
+/// to `.insert()`/`.update()`.
 class PendingTrials extends Table {
   TextColumn get localId => text()();
   IntColumn get remoteId => integer().nullable()();
   TextColumn get operation => text()(); // 'create' | 'update'
   TextColumn get payloadJson => text()();
-  TextColumn get syncStatus =>
-      text().withDefault(const Constant(SyncStatus.pending))();
+  TextColumn get syncStatus => text().withDefault(const Constant(SyncStatus.pending))();
   TextColumn get errorMessage => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
@@ -34,9 +32,7 @@ class PendingTrials extends Table {
   Set<Column> get primaryKey => {localId};
 }
 
-/// A drawing/evidence file attached to a trial that hasn't been uploaded to
-/// Supabase Storage yet. Exactly one of [trialLocalId]/[trialRemoteId] is
-/// set at any given time.
+/// Queued file upload. Exactly one of [trialLocalId]/[trialRemoteId] is set.
 class PendingFiles extends Table {
   TextColumn get id => text()();
   TextColumn get trialLocalId => text().nullable()();
@@ -46,8 +42,7 @@ class PendingFiles extends Table {
   TextColumn get mimeType => text().nullable()();
   TextColumn get localFilePath => text()();
   IntColumn get fileSizeBytes => integer()();
-  TextColumn get uploadStatus =>
-      text().withDefault(const Constant(SyncStatus.pending))();
+  TextColumn get uploadStatus => text().withDefault(const Constant(SyncStatus.pending))();
   TextColumn get errorMessage => text().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 
@@ -63,28 +58,24 @@ class LocalDb extends _$LocalDb {
 
   factory LocalDb() => _instance ??= LocalDb._(_openConnection());
 
+  /// In-memory db for tests; each call gets its own instance.
+  @visibleForTesting
+  factory LocalDb.forTesting() => LocalDb._(NativeDatabase.memory());
+
   @override
   int get schemaVersion => 1;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (m) => m.createAll(),
-  );
+  MigrationStrategy get migration => MigrationStrategy(onCreate: (m) => m.createAll());
 
-  /// Rows can be left stuck in `syncing`/`uploading` if the app is killed
-  /// mid-sync. Call once at startup so a crash doesn't permanently wedge an
-  /// item — it just falls back to being retried like any other pending item.
+  /// Rows stuck in syncing (app died mid-sync) go back to pending. Call at startup.
   Future<void> resetInterruptedSyncStatus() async {
-    await (update(pendingTrials)
-          ..where((t) => t.syncStatus.equals(SyncStatus.syncing)))
-        .write(const PendingTrialsCompanion(
-      syncStatus: Value(SyncStatus.pending),
-    ));
-    await (update(pendingFiles)
-          ..where((f) => f.uploadStatus.equals(SyncStatus.syncing)))
-        .write(const PendingFilesCompanion(
-      uploadStatus: Value(SyncStatus.pending),
-    ));
+    await (update(pendingTrials)..where((t) => t.syncStatus.equals(SyncStatus.syncing))).write(
+      const PendingTrialsCompanion(syncStatus: Value(SyncStatus.pending)),
+    );
+    await (update(pendingFiles)..where((f) => f.uploadStatus.equals(SyncStatus.syncing))).write(
+      const PendingFilesCompanion(uploadStatus: Value(SyncStatus.pending)),
+    );
   }
 }
 
