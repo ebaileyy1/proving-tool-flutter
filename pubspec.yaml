@@ -38,19 +38,16 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/logo.png
-    - assets/logo_icon.png
     - assets/fonts/Montserrat-Regular.ttf
     - assets/fonts/Montserrat-Bold.ttf
 
 flutter_launcher_icons:
   android: true
   ios: true
+  remove_alpha_ios: true
   windows:
     generate: true
-  image_path: "assets/logo_icon.png"
+  image_path: "assets/app_icon.png"
   min_sdk_android: 21
-  # The icon has transparent padding around the eye mark, and Android
-  # adaptive icons expect that safe-zone padding baked in already.
-  adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "assets/logo_icon.png"
+  adaptive_icon_background: "#111C5B"
+  adaptive_icon_foreground: "assets/app_icon_foreground.png"

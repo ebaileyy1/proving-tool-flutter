@@ -49,13 +49,11 @@ class _LoginScreenState extends State<LoginScreen> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Center(child: Image.asset('assets/logo.png', height: 64)),
-          const SizedBox(height: 12),
           Text(
             'Prove It',
             style: GoogleFonts.montserrat(
               color: AppColors.navy,
-              fontSize: 20,
+              fontSize: 32,
               fontWeight: FontWeight.w700,
             ),
             textAlign: TextAlign.center,
